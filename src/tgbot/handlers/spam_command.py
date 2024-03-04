@@ -12,5 +12,5 @@ async def anti_spam(message: Message, bot: AsyncTeleBot):
         """This is demo spam command.
 If you send this command more than once within 2 seconds, 
 bot will warn you.
-This is made by using middlewares."""
-)
+This is made by using middlewares.""",
+    )
