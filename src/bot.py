@@ -1,53 +1,43 @@
 import asyncio
 
-# filters
-from tgbot.filters.admin_filter import AdminFilter
-
-# handlers
-from tgbot.handlers.admin import admin_user
-from tgbot.handlers.spam_command import anti_spam
-from tgbot.handlers.user import any_user
-
-# middlewares
-from tgbot.middlewares.antiflood_middleware import AntiFloodMiddleware
-
-# states
-
-# utils
-from tgbot.utils.database import Database
-
-# telebot
+from telebot import asyncio_filters
 from telebot.async_telebot import AsyncTeleBot
 
-# config
+from telebot.asyncio_storage import StateMemoryStorage
+
+from tgbot.filters.admin_filter import AdminFilter
+from tgbot.handlers.admin import admin_user
+from tgbot.handlers.default_message import default_answer
+from tgbot.middlewares.antiflood_middleware import AntiFloodMiddleware
 from config import app_settings
 
-db = Database()
-
-bot = AsyncTeleBot(app_settings.TOKEN)
+bot = AsyncTeleBot(app_settings.TOKEN, state_storage=StateMemoryStorage())
 
 
 def register_handlers():
     bot.register_message_handler(
         admin_user, commands=["start"], admin=True, pass_bot=True
     )
-    bot.register_message_handler(
-        any_user, commands=["start"], admin=False, pass_bot=True
-    )
-    bot.register_message_handler(anti_spam, commands=["spam"], pass_bot=True)
-
-
-register_handlers()
-
-# Middlewares
-bot.setup_middleware(AntiFloodMiddleware(limit=2, bot=bot))
-
-# custom filters
-bot.add_custom_filter(AdminFilter())
+    bot.register_message_handler(default_answer, pass_bot=True)
 
 
 async def run():
     await bot.polling(non_stop=True)
 
 
-asyncio.run(run())
+if __name__ == '__main__':
+    register_handlers()
+
+    bot.add_custom_filter(AdminFilter())
+    bot.add_custom_filter(asyncio_filters.StateFilter(bot))
+
+    # Middlewares
+    bot.setup_middleware(
+        AntiFloodMiddleware(
+            timeout=app_settings.TIMEOUT_MESSAGES,
+            max_messages=app_settings.MAX_MESSAGES,
+            bot=bot
+        )
+    )
+
+    asyncio.run(run())
