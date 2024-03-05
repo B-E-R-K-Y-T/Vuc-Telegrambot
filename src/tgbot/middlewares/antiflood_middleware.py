@@ -46,11 +46,12 @@ class AntiFloodMiddleware(BaseMiddleware):
                 await self.bot.send_message(
                     message.chat.id,
                     f"Вы отправляете сообщения слишком часто. "
-                    f"Через {self.max_messages} секунд(ы) вы сможете снова отправлять сообщения."
+                    f"Через {self.timeout} секунд(ы) вы сможете снова отправлять их.",
                 )
                 return CancelUpdate()
             else:
-                user_message.count = 1
+                self.messages[message.from_user.id] = UserMessageCounter(message)
+                self.messages[message.from_user.id].count = 1
         else:
             user_message.count += 1
 

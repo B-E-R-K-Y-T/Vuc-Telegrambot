@@ -1,2 +1,3 @@
 class Command:
-    START = 'start'
+    START = "start"
+    CANCEL = "cancel"
