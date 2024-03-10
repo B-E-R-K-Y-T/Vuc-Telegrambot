@@ -11,6 +11,12 @@ class AppSettings(BaseSettings):
     MAX_MESSAGES: int
     TIMEOUT_MESSAGES: int
 
+    SERVER_HOST: str
+    SERVER_PORT: int
+
+    REDIS_HOST: str
+    REDIS_PORT: int
+
     model_config = SettingsConfigDict(env_file=f"{BASE_DIR}/.env")
 
 
