@@ -5,7 +5,6 @@ from tgbot.user import User
 
 
 class CheckLogin(SimpleCustomFilter):
-
     key = 'check_login'
 
     def __init__(self, bot):

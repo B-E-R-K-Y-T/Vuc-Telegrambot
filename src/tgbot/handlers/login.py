@@ -53,7 +53,7 @@ async def login_handler_password(message: Message, bot: AsyncTeleBot):
     else:
         await bot.send_message(message.chat.id, 'Успешно.')
 
-        await db.set_value(key=str(usr_id), value=jwt)
+        await db.set_value(key=str(usr_id), value=[message.date, jwt])
 
     await bot.delete_state(message.from_user.id, message.chat.id)
     del users[usr_id]

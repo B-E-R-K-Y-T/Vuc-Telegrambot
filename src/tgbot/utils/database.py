@@ -8,6 +8,9 @@ class Database:
         self.redis = aioredis.from_url(f"redis://{app_settings.REDIS_HOST}:{app_settings.REDIS_PORT}")
 
     async def set_value(self, key: str, value):
+        if isinstance(value, list):
+            value = ','.join([str(v) for v in value])
+
         await self.redis.set(key, value)
 
     async def get_value(self, key: str):
