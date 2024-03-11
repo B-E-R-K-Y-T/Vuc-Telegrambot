@@ -44,6 +44,9 @@ async def login_handler_password(message: Message, bot: AsyncTeleBot):
     user = users[usr_id]
     user.password = message.text
 
+    # Удаляем пароль пользователя из чата
+    await bot.delete_message(message.chat.id, message.message_id)
+
     await bot.send_message(message.chat.id, "Обрабатываю запрос...")
 
     jwt = await api.login(user.username, user.password)
