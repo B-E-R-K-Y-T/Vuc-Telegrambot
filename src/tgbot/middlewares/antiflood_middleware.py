@@ -53,6 +53,3 @@ class AntiFloodMiddleware(BaseMiddleware):
         elif message.date - user_message.message_deque[0].date < self.interval:
             user_message.is_ban = True
             return await self.__send_ban_message(message, self.timeout)
-
-    async def post_process(self, message: Message, data, exception):
-        pass

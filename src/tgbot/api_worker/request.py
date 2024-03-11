@@ -9,8 +9,11 @@ class Request:
 
     async def __request(self, endpoint: str, *, data: dict = None, headers: dict = None, method: str = ''):
         async with aiohttp.ClientSession(headers=headers) as session:
-            async with getattr(session, method)(f'{self.base_url}{endpoint}', data=data) as resp:
-                return resp
+            try:
+                async with getattr(session, method)(f'{self.base_url}{endpoint}', data=data) as resp:
+                    return resp
+            except aiohttp.ClientError:
+                return None
 
     async def get(self, endpoint: str, *, data: dict = None, headers: dict = None):
         return await self.__request(endpoint, data=data, headers=headers, method='get')

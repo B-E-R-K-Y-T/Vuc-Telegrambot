@@ -7,7 +7,7 @@ class APIWorker:
     def __init__(self):
         self.request = Request()
 
-    async def login(self, username: str, password: str) -> str:
+    async def login(self, username: str, password: str) -> str | None:
         """
         Вернет JWT токен в виде строки
         """
@@ -21,6 +21,9 @@ class APIWorker:
         }
 
         resp = await self.request.post('/auth/jwt/login', headers=headers, data=data)
+
+        if resp is None:
+            return None
 
         if resp.status == HTTPStatus.NO_CONTENT.value:
             return resp.cookies.get('bonds').value

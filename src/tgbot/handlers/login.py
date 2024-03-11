@@ -1,5 +1,3 @@
-import re
-
 from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message
 
@@ -51,7 +49,7 @@ async def login_handler_password(message: Message, bot: AsyncTeleBot):
     jwt = await api.login(user.username, user.password)
 
     if jwt is None:
-        await bot.send_message(message.chat.id, 'Неверные данные.')
+        await bot.send_message(message.chat.id, 'Ошибка.')
     else:
         await bot.send_message(message.chat.id, 'Успешно.')
 
