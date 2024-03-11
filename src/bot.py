@@ -25,6 +25,7 @@ def init_handlers():
         bot.register_message_handler(
             *args, **kwargs, check_login=True
         )
+
     add_check_login(
         start_command_handler, commands=[Command.START], pass_bot=True
     )
@@ -45,10 +46,6 @@ def init_handlers():
     add_check_login(default_answer, pass_bot=True)
 
 
-async def run():
-    await bot.polling(non_stop=True)
-
-
 def init_middlewares():
     middlewares = (
         AntiFloodMiddleware(
@@ -63,12 +60,24 @@ def init_middlewares():
         bot.setup_middleware(middleware)
 
 
+def init_filters():
+    filters = (
+        AdminFilter(),
+        CheckLogin(bot),
+        asyncio_filters.StateFilter(bot),
+    )
+
+    for filter_ in filters:
+        bot.add_custom_filter(filter_)
+
+
+async def run():
+    await bot.polling(non_stop=True)
+
+
 if __name__ == "__main__":
     init_handlers()
     init_middlewares()
-
-    bot.add_custom_filter(AdminFilter())
-    bot.add_custom_filter(CheckLogin(bot))
-    bot.add_custom_filter(asyncio_filters.StateFilter(bot))
+    init_filters()
 
     asyncio.run(run())
