@@ -6,7 +6,7 @@ from telebot.types import Message
 
 
 class UserMessage:
-    def __init__(self, max_messages):
+    def __init__(self, max_messages: int):
         self.message_deque = deque(maxlen=max_messages)
         self.is_ban = False
 
