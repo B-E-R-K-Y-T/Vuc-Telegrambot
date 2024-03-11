@@ -9,6 +9,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 class AppSettings(BaseSettings):
     TOKEN: str
     MAX_MESSAGES: int
+    INTERVAL: int
     TIMEOUT_MESSAGES: int
 
     SERVER_HOST: str

@@ -1,10 +1,15 @@
+import re
+
 from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message
 
+from exceptions import ErrorMessage
 from tgbot.states.login import Login
 from tgbot.api_worker.client import APIWorker
 from tgbot.user import User
 from tgbot.utils.database import Database
+from tgbot.validators.login import check_valid_email
+from tgbot.validators.worker import bind_validator
 
 users = {}
 db = Database()
@@ -23,11 +28,12 @@ async def login_handler_init(message: Message, bot: AsyncTeleBot):
     else:
         users[usr_id] = user
 
-        await bot.send_message(message.chat.id, "Введите свою почту: ")
-        await bot.set_state(message.from_user.id, Login.name, message.chat.id)
+        await bot.send_message(message.chat.id, "Введите свою почту:")
+        await bot.set_state(message.from_user.id, Login.email, message.chat.id)
 
 
-async def login_handler_name(message: Message, bot: AsyncTeleBot):
+@bind_validator(check_valid_email, ErrorMessage.EMAIL_INVALID_FORMAT)
+async def login_handler_email(message: Message, bot: AsyncTeleBot):
     usr_id = message.from_user.id
     users[usr_id].username = message.text
 

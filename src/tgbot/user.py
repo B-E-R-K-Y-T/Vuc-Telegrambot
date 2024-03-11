@@ -9,7 +9,7 @@ class User:
         self.db = Database()
 
     async def get_jwt(self) -> str:
-        return str(await self.db.get_value(key=str(self.tg_id)))
+        return await self.db.get_value(key=str(self.tg_id))
 
     @property
     def username(self) -> str:

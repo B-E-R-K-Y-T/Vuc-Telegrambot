@@ -12,3 +12,6 @@ class Database:
 
     async def get_value(self, key: str):
         return await self.redis.get(key)
+
+    async def del_value(self, key: str):
+        await self.redis.delete(key)

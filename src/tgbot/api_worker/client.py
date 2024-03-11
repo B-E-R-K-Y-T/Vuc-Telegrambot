@@ -9,7 +9,7 @@ class APIWorker:
 
     async def login(self, username: str, password: str) -> str:
         """
-        Вернет JWT токен ввиде строки
+        Вернет JWT токен в виде строки
         """
         headers = {
             "accept": "application/json",

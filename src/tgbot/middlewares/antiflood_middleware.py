@@ -1,61 +1,58 @@
+from collections import deque
+
 from telebot.asyncio_handler_backends import BaseMiddleware
-from telebot.async_telebot import CancelUpdate
+from telebot.async_telebot import CancelUpdate, AsyncTeleBot
+from telebot.types import Message
 
 
-class UserMessageCounter:
-    def __init__(self, message):
-        self.__message = message
-        self.__count: int = 1
-
-    @property
-    def message(self):
-        return self.__message
-
-    @property
-    def count(self):
-        return self.__count
-
-    @count.setter
-    def count(self, value: int):
-        self.__count = value
+class UserMessage:
+    def __init__(self, max_messages):
+        self.message_deque = deque(maxlen=max_messages)
+        self.is_ban = False
 
 
 class AntiFloodMiddleware(BaseMiddleware):
-    def __init__(self, timeout, max_messages, bot) -> None:
+    def __init__(self, timeout: int, interval: int, max_messages, bot: AsyncTeleBot):
         super().__init__()
 
-        self.messages: dict[UserMessageCounter] = {}
+        self.messages: dict[int, UserMessage] = {}
         self.timeout = timeout
+        self.interval = interval
         self.max_messages = max_messages
         self.update_types = ["message"]
-        self.bot = bot
+        self.bot: AsyncTeleBot = bot
 
-    async def pre_process(self, message, data):
-        msg_id = message.from_user.id
+    async def __send_ban_message(self, message: Message, timeout: int):
+        await self.bot.send_message(message.chat.id, f'Вы отправляете запросы слишком часто. '
+                                                     f'Подождите {timeout} секунд.')
+        return CancelUpdate()
 
-        if msg_id not in self.messages:
-            self.messages[msg_id] = UserMessageCounter(message)
-            return
+    async def pre_process(self, message: Message, data):
+        user_id = message.from_user.id
 
-        user_message = self.messages[msg_id]
-        user_message_count = user_message.count
-        user_message_date = user_message.message.date
+        if user_id not in self.messages:
+            self.messages[user_id] = UserMessage(self.max_messages)
 
-        if user_message_count >= self.max_messages:
-            if message.date - user_message_date < self.timeout:
-                await self.bot.send_message(
-                    message.chat.id,
-                    f"Вы отправляете сообщения слишком часто. "
-                    f"Через {self.timeout} секунд(ы) вы сможете снова отправлять их.",
+        user_message = self.messages[user_id]
+
+        if user_message.is_ban:
+            if message.date - user_message.message_deque[-1].date < self.timeout:
+                return await self.__send_ban_message(
+                    message=message,
+                    timeout=self.timeout - (message.date - user_message.message_deque[-1].date)
                 )
-                return CancelUpdate()
             else:
-                self.messages[message.from_user.id] = UserMessageCounter(message)
-                self.messages[message.from_user.id].count = 1
-        else:
-            user_message.count += 1
+                user_message.is_ban = False
 
-        user_message.message.date = message.date
+        if user_message.message_deque:
+            if message.date - user_message.message_deque[0].date > self.interval:
+                user_message.message_deque.clear()
 
-    async def post_process(self, message, data, exception):
+        if len(user_message.message_deque) < self.max_messages:
+            user_message.message_deque.append(message)
+        elif message.date - user_message.message_deque[0].date < self.interval:
+            user_message.is_ban = True
+            return await self.__send_ban_message(message, self.timeout)
+
+    async def post_process(self, message: Message, data, exception):
         pass
