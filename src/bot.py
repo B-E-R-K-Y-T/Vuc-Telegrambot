@@ -12,6 +12,7 @@ from tgbot.handlers.cancel import cancel_state
 from tgbot.handlers.default_message import default_answer
 from exceptions import VucExceptionHandler
 from tgbot.handlers.login import login_handler_init, login_handler_email, login_handler_password
+from tgbot.handlers.logout import logout_handler
 from tgbot.handlers.start import start_command_handler
 from tgbot.middlewares.antiflood_middleware import AntiFloodMiddleware
 from config import app_settings
@@ -28,6 +29,9 @@ def init_handlers():
 
     add_check_login(
         start_command_handler, commands=[Command.START], pass_bot=True
+    )
+    add_check_login(
+        logout_handler, commands=[Command.LOGOUT], pass_bot=True
     )
     add_check_login(
         cancel_state, commands=[Command.CANCEL], pass_bot=True
