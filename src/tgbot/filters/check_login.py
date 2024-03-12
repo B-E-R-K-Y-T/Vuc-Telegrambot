@@ -16,5 +16,5 @@ class CheckLogin(SimpleCustomFilter):
         if await user.get_jwt() is None:
             await self.bot.send_message(message.chat.id, 'Вы не вошли в систему.')
             return False
-        else:
-            return True
+
+        return True

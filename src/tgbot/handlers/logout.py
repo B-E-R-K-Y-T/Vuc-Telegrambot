@@ -11,6 +11,8 @@ async def logout_handler(message: Message, bot: AsyncTeleBot):
     user = User(message.from_user.id)
     db = Database()
 
+    await bot.send_message(message.chat.id, 'Обрабатываю запрос...')
+
     if await api.logout(await user.get_jwt()):
         await db.del_value(str(message.from_user.id))
         await bot.send_message(message.chat.id, 'Вы вышли из аккаунта.')

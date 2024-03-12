@@ -30,7 +30,7 @@ async def login_handler_init(message: Message, bot: AsyncTeleBot):
         await bot.set_state(message.from_user.id, Login.email, message.chat.id)
 
 
-@bind_validator(check_valid_email, ErrorMessage.EMAIL_INVALID_FORMAT)
+@bind_validator(validator=check_valid_email, msg_err=ErrorMessage.EMAIL_INVALID_FORMAT)
 async def login_handler_email(message: Message, bot: AsyncTeleBot):
     usr_id = message.from_user.id
     users[usr_id].username = message.text

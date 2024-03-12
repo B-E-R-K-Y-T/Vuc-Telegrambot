@@ -5,7 +5,7 @@ from telebot.async_telebot import AsyncTeleBot
 
 from telebot.asyncio_storage import StateMemoryStorage
 
-from tgbot.commands import Command
+from tgbot.commands import CommandSequence
 from tgbot.filters.admin_filter import AdminFilter
 from tgbot.filters.check_login import CheckLogin
 from tgbot.handlers.cancel import cancel_state
@@ -13,6 +13,7 @@ from tgbot.handlers.default_message import default_answer
 from exceptions import VucExceptionHandler
 from tgbot.handlers.login import login_handler_init, login_handler_email, login_handler_password
 from tgbot.handlers.logout import logout_handler
+from tgbot.handlers.menu import menu_handler
 from tgbot.handlers.start import start_command_handler
 from tgbot.middlewares.antiflood_middleware import AntiFloodMiddleware
 from config import app_settings
@@ -28,16 +29,19 @@ def init_handlers():
         )
 
     add_check_login(
-        start_command_handler, commands=[Command.START], pass_bot=True
+        start_command_handler, commands=[CommandSequence.START], pass_bot=True
     )
     add_check_login(
-        logout_handler, commands=[Command.LOGOUT], pass_bot=True
+        logout_handler, commands=[CommandSequence.LOGOUT], pass_bot=True
     )
     add_check_login(
-        cancel_state, commands=[Command.CANCEL], pass_bot=True
+        menu_handler, commands=[CommandSequence.MENU], pass_bot=True
     )
     bot.register_message_handler(
-        login_handler_init, commands=[Command.LOGIN], pass_bot=True
+        cancel_state, commands=[CommandSequence.CANCEL], pass_bot=True
+    )
+    bot.register_message_handler(
+        login_handler_init, commands=[CommandSequence.LOGIN], pass_bot=True
     )
 
     bot.register_message_handler(
@@ -47,7 +51,8 @@ def init_handlers():
         login_handler_password, pass_bot=True, state=Login.password
     )
 
-    add_check_login(default_answer, pass_bot=True)
+    add_check_login(default_answer, pass_bot=True,
+                    func=lambda msg: msg.text not in CommandSequence.commands())
 
 
 def init_middlewares():

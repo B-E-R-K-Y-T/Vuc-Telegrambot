@@ -37,6 +37,15 @@ class APIWorker:
 
         return False
 
+    async def get_id_from_tg(self, token: str, telegram_id: int) -> bool:
+        resp = await self.request.post('/users/get_id_from_tg',
+                                       headers=self.headers,
+                                       cookies={'bonds': token},
+                                       data={'telegram_id': telegram_id})
+
+        if resp.status == HTTPStatus.OK.value:
+            return await resp.json()['id']
+
 
 __all__ = (
     APIWorker.__name__,
