@@ -1,4 +1,5 @@
 import asyncio
+from copy import copy
 from functools import wraps
 from typing import Callable
 
@@ -10,8 +11,6 @@ class _auto_callback_data:
     state = 0
 
     def __new__(cls, *args, **kwargs):
-        object.__new__(cls)
-
         cls.state += 1
 
         return str(cls.state)
@@ -20,6 +19,13 @@ class _auto_callback_data:
 class CallBackStackWorker:
     def __init__(self):
         self.__stack: dict[int, list[dict[Callable, tuple]]] = {}
+        self.__root: dict = {}
+
+    def get_root_id(self, chat_id: int) -> int | None:
+        return self.__root.get(chat_id)
+
+    def set_root_id(self, chat_id: int, metadata: Message | CallbackQuery) -> None:
+        self.__root[chat_id] = self.__get_message_id(metadata)
 
     def add_call(
         self,
@@ -27,46 +33,62 @@ class CallBackStackWorker:
         func: Callable,
         bot: AsyncTeleBot,
         metadata: Message | CallbackQuery,
+        message_id,
+        is_root: bool = False
     ):
         if self.__stack.get(chat_id) is None:
             self.__stack[chat_id] = []
 
-        self.__stack[chat_id].append({func: (metadata, bot)})
+        self.__stack[chat_id].append({func: (metadata, bot, message_id, is_root)})
 
     def get_last_call(self, chat_id: int) -> dict:
         if self.__stack.get(chat_id) is not None:
             if len(self.__stack[chat_id]) >= 2:
-                return self.__stack[chat_id].pop(-2)
+                call = copy(self.__stack[chat_id][-2])
+                self.__stack[chat_id].pop(-1)
+                return call
 
-    def listen_call(self, func):
-        @wraps(func)
-        async def wrapper(
-            metadata: Message | CallbackQuery, bot: AsyncTeleBot, *args, **kwargs
-        ) -> Callable:
-            if isinstance(metadata, Message):
-                chat_id = metadata.chat.id
-            elif isinstance(metadata, CallbackQuery):
-                chat_id = metadata.message.chat.id
-            else:
-                raise TypeError
+    def listen_call(self, is_root: bool = False):
+        def decorator(func):
+            @wraps(func)
+            async def wrapper(
+                metadata: Message | CallbackQuery, bot: AsyncTeleBot, *args, **kwargs
+            ) -> Callable:
+                if isinstance(metadata, Message):
+                    chat_id = metadata.chat.id
+                    message_id = metadata.message_id
+                elif isinstance(metadata, CallbackQuery):
+                    chat_id = metadata.message.chat.id
+                    message_id = metadata.message.message_id
+                else:
+                    raise TypeError
 
-            self.add_call(
-                chat_id,
-                func,
-                bot,
-                metadata
-            )
+                self.add_call(
+                    chat_id,
+                    func,
+                    bot,
+                    metadata,
+                    message_id,
+                    is_root=is_root
+                )
 
-            if asyncio.iscoroutinefunction(func):
-                return await func(metadata, bot, *args, **kwargs)
-            else:
-                return func(metadata, bot, *args, **kwargs)
+                if asyncio.iscoroutinefunction(func):
+                    return await func(metadata, bot, *args, **kwargs)
+                else:
+                    return func(metadata, bot, *args, **kwargs)
 
-        return wrapper
+            return wrapper
 
-    def get_len_stack_chat(self, chat_id: int) -> int:
-        if chat_id in self.__stack:
-            return len(self.__stack[chat_id])
+        return decorator
+
+    @staticmethod
+    def __get_message_id(metadata: Message | CallbackQuery):
+        if isinstance(metadata, Message):
+            return metadata.message_id
+        elif isinstance(metadata, CallbackQuery):
+            return metadata.message.message_id
+        else:
+            raise TypeError
 
     def __repr__(self):
         return f"<{self.__class__.__name__}> STACK: {self.__stack}"
@@ -87,6 +109,9 @@ class CallBackData:
     STUDENT_MENU = _auto_callback_data()
     SQUAD_MENU = _auto_callback_data()
     PLATOON_MENU = _auto_callback_data()
+
+    ADD_STUDENT = _auto_callback_data()
+    MOVE_STUDENT = _auto_callback_data()
 
     BACK = _auto_callback_data()
 

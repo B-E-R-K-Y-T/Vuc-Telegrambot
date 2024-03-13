@@ -16,7 +16,7 @@ from tgbot.handlers.login import (
     login_handler_password,
 )
 from tgbot.handlers.logout import logout_handler
-from tgbot.handlers.menu import menu_handler, student_menu, back
+from tgbot.handlers.menu import menu_handler, student_menu, back, platoon_menu, squad_menu, marks_menu, attend_menu
 from tgbot.handlers.start import start_command_handler
 from tgbot.middlewares.antiflood_middleware import AntiFloodMiddleware
 from config import app_settings
@@ -31,26 +31,50 @@ bot = AsyncTeleBot(
 
 
 def init_handlers():
-    def add_check_login(*args, callback_query_flag: bool = False, **kwargs):
+    def init_base_filters(*args, callback_query_flag: bool = False, **kwargs):
         if not callback_query_flag:
             bot.register_message_handler(*args, **kwargs, check_login=True)
         else:
             bot.register_callback_query_handler(*args, **kwargs, check_login=True)
 
-    add_check_login(
+    init_base_filters(
         start_command_handler, commands=[CommandSequence.START], pass_bot=True
     )
-    add_check_login(logout_handler, commands=[CommandSequence.LOGOUT], pass_bot=True)
-    add_check_login(menu_handler, commands=[CommandSequence.MENU], pass_bot=True)
+    init_base_filters(logout_handler, commands=[CommandSequence.LOGOUT], pass_bot=True)
+    init_base_filters(menu_handler, commands=[CommandSequence.MENU], pass_bot=True)
 
-    add_check_login(
+    init_base_filters(
         student_menu,
         func=lambda call: call.data == CallBackData.STUDENT_MENU,
         callback_query_flag=True,
         pass_bot=True,
     )
+    init_base_filters(
+        squad_menu,
+        func=lambda call: call.data == CallBackData.SQUAD_MENU,
+        callback_query_flag=True,
+        pass_bot=True,
+    )
+    init_base_filters(
+        platoon_menu,
+        func=lambda call: call.data == CallBackData.PLATOON_MENU,
+        callback_query_flag=True,
+        pass_bot=True,
+    )
+    init_base_filters(
+        marks_menu,
+        func=lambda call: call.data == CallBackData.MARK,
+        callback_query_flag=True,
+        pass_bot=True,
+    )
+    init_base_filters(
+        attend_menu,
+        func=lambda call: call.data == CallBackData.ATTEND,
+        callback_query_flag=True,
+        pass_bot=True,
+    )
 
-    add_check_login(
+    init_base_filters(
         back,
         func=lambda call: call.data == CallBackData.BACK,
         callback_query_flag=True,
@@ -69,7 +93,7 @@ def init_handlers():
         login_handler_password, pass_bot=True, state=Login.password
     )
 
-    add_check_login(
+    init_base_filters(
         default_answer,
         pass_bot=True,
         func=lambda msg: msg.text not in CommandSequence.commands(),
