@@ -3,8 +3,8 @@ from functools import wraps
 from typing import Callable
 
 
-def bind_validator(validator: Callable, msg_err: str = 'Ошибка.'):
-    def decorator(func):
+def bind_validator(validator: Callable, msg_err: str = "Ошибка.") -> Callable:
+    def decorator(func: Callable) -> Callable:
         @wraps(func)
         async def wrapper(message, bot, *args, **kwargs):
             if await validator(message=message):

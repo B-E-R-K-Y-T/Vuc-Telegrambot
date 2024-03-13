@@ -10,9 +10,7 @@ class MainVucException(Exception):
         if message is not None:
             self.__message = message
         else:
-            self.__message = (
-                f"Error. Detail: {self.__class__=}"
-            )
+            self.__message = f"Error. Detail: {self.__class__=}"
 
     def __str__(self):
         return self.__message
@@ -28,4 +26,4 @@ class VucExceptionHandler(ExceptionHandler):
 
 
 class ErrorMessage:
-    EMAIL_INVALID_FORMAT = 'Не верный формат электронной почты.'
+    EMAIL_INVALID_FORMAT = "Не верный формат электронной почты."

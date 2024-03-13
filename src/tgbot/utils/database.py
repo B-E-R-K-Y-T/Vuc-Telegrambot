@@ -5,11 +5,13 @@ from config import app_settings
 
 class Database:
     def __init__(self) -> None:
-        self.redis = aioredis.from_url(f"redis://{app_settings.REDIS_HOST}:{app_settings.REDIS_PORT}")
+        self.redis = aioredis.from_url(
+            f"redis://{app_settings.REDIS_HOST}:{app_settings.REDIS_PORT}"
+        )
 
     async def set_value(self, key: str, value):
         if isinstance(value, list):
-            value = ','.join([str(v) for v in value])
+            value = ",".join([str(v) for v in value])
 
         await self.redis.set(key, value)
 

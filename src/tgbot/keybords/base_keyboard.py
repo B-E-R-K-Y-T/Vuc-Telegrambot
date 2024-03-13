@@ -1,25 +1,21 @@
 from abc import ABC, abstractmethod
+from typing import Optional
 
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
-class BaseKeyboard(ABC):
-    row_width: int = 3
+class BaseKeyboard:
+    def __init__(self, buttons: Optional[dict] = None):
+        self.buttons: Optional[dict] = buttons
 
-    def __new__(cls, *args, **kwargs):
-        self = object.__new__(cls)
+    @staticmethod
+    def build_keyboard(buttons: dict, row_width: int = 3) -> InlineKeyboardMarkup:
+        keyboard = InlineKeyboardMarkup(row_width=row_width)
+        for name, callback in buttons.items():
+            keyboard.add(InlineKeyboardButton(text=name, callback_data=callback))
 
-        return self(*args, **kwargs)
+        return keyboard
 
-    def __init__(self, callback_data: str | None = None):
-        self.callback_data = callback_data
-        self.keyboard = InlineKeyboardMarkup(row_width=self.row_width)
-
-    @abstractmethod
-    def build_keyboard(self) -> InlineKeyboardButton:
-        raise NotImplementedError
-
-    @abstractmethod
-    def __call__(self, *args, **kwargs) -> InlineKeyboardButton:
-        raise NotImplementedError
-
+    def update_buttons(self, new_buttons: Optional[dict] = None):
+        if new_buttons is not None:
+            self.buttons.update(new_buttons)

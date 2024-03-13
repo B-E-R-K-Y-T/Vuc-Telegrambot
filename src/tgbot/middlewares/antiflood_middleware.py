@@ -12,7 +12,9 @@ class UserMessage:
 
 
 class AntiFloodMiddleware(BaseMiddleware):
-    def __init__(self, timeout: int, interval: int, max_messages, bot: AsyncTeleBot):
+    def __init__(
+        self, timeout: int, interval: int, max_messages: int, bot: AsyncTeleBot
+    ):
         super().__init__()
 
         self.messages: dict[int, UserMessage] = {}
@@ -23,8 +25,10 @@ class AntiFloodMiddleware(BaseMiddleware):
         self.bot: AsyncTeleBot = bot
 
     async def __send_ban_message(self, message: Message, timeout: int):
-        await self.bot.send_message(message.chat.id, f'Вы отправляете запросы слишком часто. '
-                                                     f'Подождите {timeout} секунд.')
+        await self.bot.send_message(
+            message.chat.id,
+            f"Вы отправляете запросы слишком часто. " f"Подождите {timeout} секунд.",
+        )
         return CancelUpdate()
 
     async def pre_process(self, message: Message, data):
@@ -39,7 +43,7 @@ class AntiFloodMiddleware(BaseMiddleware):
             if message.date - user_message.message_deque[-1].date < self.timeout:
                 return await self.__send_ban_message(
                     message=message,
-                    timeout=self.timeout - (message.date - user_message.message_deque[-1].date)
+                    timeout=self.timeout - (message.date - user_message.message_deque[-1].date),
                 )
             else:
                 user_message.is_ban = False
@@ -54,5 +58,5 @@ class AntiFloodMiddleware(BaseMiddleware):
             user_message.is_ban = True
             return await self.__send_ban_message(message, self.timeout)
 
-    async def post_process(self, message, data, handler_error):
+    async def post_process(self, message: Message, data, handler_error):
         pass

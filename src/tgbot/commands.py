@@ -13,16 +13,16 @@ class Commands:
     def commands(cls):
         res = []
 
-        for name_attr, type_ in cls.__dict__['__annotations__'].items():
+        for name_attr, type_ in cls.__dict__["__annotations__"].items():
             if type_ is Command:
-                res.append(f'/{cls.__dict__[name_attr]}')
+                res.append(f"/{cls.__dict__[name_attr]}")
 
         return res
 
 
 class CommandSequence(Commands):
-    START: Command = 'start'
-    CANCEL: Command = 'cancel'
-    LOGIN: Command = 'login'
-    LOGOUT: Command = 'logout'
-    MENU: Command = 'menu'
+    START: Command = "start"
+    CANCEL: Command = "cancel"
+    LOGIN: Command = "login"
+    LOGOUT: Command = "logout"
+    MENU: Command = "menu"

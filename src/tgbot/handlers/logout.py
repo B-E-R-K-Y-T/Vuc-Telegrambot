@@ -8,13 +8,13 @@ from tgbot.utils.database import Database
 
 async def logout_handler(message: Message, bot: AsyncTeleBot):
     api = APIWorker()
-    user = User(message.from_user.id)
+    user = await User(message.from_user.id).ainit()
     db = Database()
 
-    await bot.send_message(message.chat.id, 'Обрабатываю запрос...')
+    await bot.send_message(message.chat.id, "Обрабатываю запрос...")
 
     if await api.logout(await user.get_jwt()):
         await db.del_value(str(message.from_user.id))
-        await bot.send_message(message.chat.id, 'Вы вышли из аккаунта.')
+        await bot.send_message(message.chat.id, "Вы вышли из аккаунта.")
     else:
-        await bot.send_message(message.chat.id, 'Ошибка.')
+        await bot.send_message(message.chat.id, "Ошибка.")
