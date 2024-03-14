@@ -1,3 +1,5 @@
+from json import JSONEncoder
+
 import aiohttp
 
 from config import app_settings
@@ -85,7 +87,7 @@ class Request:
         self,
         endpoint: str,
         *,
-        data: dict = None,
+        data: JSONEncoder = None,
         headers: dict = None,
         cookies: dict = None,
         params: dict = None,

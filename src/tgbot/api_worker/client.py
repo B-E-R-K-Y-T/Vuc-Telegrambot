@@ -1,3 +1,5 @@
+import json
+from copy import copy
 from http import HTTPStatus
 
 from tgbot.api_worker.request import Request
@@ -79,5 +81,33 @@ class APIWorker:
         if resp.status == HTTPStatus.OK.value:
             return (await resp.json())["role"]
 
+    async def get_self(self, token: str, user_id: int) -> str:
+        resp = await self.request.get(
+            "/users/get_self",
+            headers=self.headers,
+            cookies={"bonds": token},
+            params={"user_id": user_id},
+        )
 
-__all__ = (APIWorker.__name__,)
+        if resp.status == HTTPStatus.OK.value:
+            return await resp.json()
+
+    async def set_user_attr(self, token: str, attrs: dict) -> str:
+        headers = copy(self.headers)
+
+        headers['accept'] = '*/*'
+        headers['Content-Type'] = 'application/json'
+
+        resp = await self.request.patch(
+            "/users/set_user_attr",
+            headers=headers,
+            cookies={"bonds": token},
+            data=json.dumps(attrs),
+        )
+
+        return resp
+
+
+__all__ = (
+    APIWorker.__name__,
+)

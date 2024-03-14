@@ -10,7 +10,7 @@ class Student(BaseKeyboard):
             buttons={
                 "Оценки": CallBackData.MARK,
                 "Посещаемость": CallBackData.ATTEND,
-                "Личная информация": CallBackData.SELF_DATA,
+                "Личная информация": CallBackData.PERSONAL_DATA,
             }
         )
 

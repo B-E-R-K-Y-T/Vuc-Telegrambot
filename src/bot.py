@@ -16,11 +16,15 @@ from tgbot.handlers.login import (
     login_handler_password,
 )
 from tgbot.handlers.logout import logout_handler
-from tgbot.handlers.menu import menu_handler, student_menu, back, platoon_menu, squad_menu, marks_menu, attend_menu
+from tgbot.handlers.menu import menu_handler, student_menu, back, platoon_menu, squad_menu, marks_menu, attend_menu, \
+    personal_menu
+from tgbot.handlers.self import self
+from tgbot.handlers.setters_pd import set_name, init_name_state
 from tgbot.handlers.start import start_command_handler
 from tgbot.middlewares.antiflood_middleware import AntiFloodMiddleware
 from config import app_settings
 from tgbot.states.login import Login
+from tgbot.states.set_name import SetName
 from tgbot.utils.callback_data import CallBackData
 
 bot = AsyncTeleBot(
@@ -37,8 +41,11 @@ def init_handlers():
         else:
             bot.register_callback_query_handler(*args, **kwargs, check_login=True)
 
-    init_base_filters(
+    bot.register_message_handler(
         start_command_handler, commands=[CommandSequence.START], pass_bot=True
+    )
+    init_base_filters(
+        self, commands=[CommandSequence.SELF], pass_bot=True
     )
     init_base_filters(logout_handler, commands=[CommandSequence.LOGOUT], pass_bot=True)
     init_base_filters(menu_handler, commands=[CommandSequence.MENU], pass_bot=True)
@@ -73,6 +80,19 @@ def init_handlers():
         callback_query_flag=True,
         pass_bot=True,
     )
+    init_base_filters(
+        personal_menu,
+        func=lambda call: call.data == CallBackData.PERSONAL_DATA,
+        callback_query_flag=True,
+        pass_bot=True,
+    )
+
+    init_base_filters(
+        init_name_state,
+        func=lambda call: call.data == CallBackData.NAME,
+        callback_query_flag=True,
+        pass_bot=True,
+    )
 
     init_base_filters(
         back,
@@ -91,6 +111,9 @@ def init_handlers():
     bot.register_message_handler(login_handler_email, pass_bot=True, state=Login.email)
     bot.register_message_handler(
         login_handler_password, pass_bot=True, state=Login.password
+    )
+    init_base_filters(
+        set_name, pass_bot=True, state=SetName.init
     )
 
     init_base_filters(

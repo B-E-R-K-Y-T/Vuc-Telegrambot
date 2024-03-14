@@ -26,3 +26,4 @@ class CommandSequence(Commands):
     LOGIN: Command = "login"
     LOGOUT: Command = "logout"
     MENU: Command = "menu"
+    SELF: Command = "self"
