@@ -16,15 +16,40 @@ from tgbot.handlers.login import (
     login_handler_password,
 )
 from tgbot.handlers.logout import logout_handler
-from tgbot.handlers.menu import menu_handler, student_menu, back, platoon_menu, squad_menu, marks_menu, attend_menu, \
+from tgbot.handlers.menu import (
+    menu_handler,
+    student_menu,
+    back,
+    platoon_menu,
+    squad_menu,
+    marks_menu,
+    attend_menu,
     personal_menu
+)
 from tgbot.handlers.self import self
-from tgbot.handlers.setters_pd import set_name, init_name_state
+from tgbot.handlers.setters_pd import (
+    init_email_state,
+    init_dos_state,
+    init_phone_state,
+    init_address_state,
+    init_institute_state,
+    init_group_study_state,
+    init_name_state,
+    init_dob_state,
+    set_dos,
+    set_phone,
+    set_address,
+    set_institute,
+    set_dob,
+    set_group_study,
+    set_name,
+    set_email,
+)
 from tgbot.handlers.start import start_command_handler
 from tgbot.middlewares.antiflood_middleware import AntiFloodMiddleware
 from config import app_settings
 from tgbot.states.login import Login
-from tgbot.states.set_name import SetName
+from tgbot.states.setter_states import *
 from tgbot.utils.callback_data import CallBackData
 
 bot = AsyncTeleBot(
@@ -88,13 +113,6 @@ def init_handlers():
     )
 
     init_base_filters(
-        init_name_state,
-        func=lambda call: call.data == CallBackData.NAME,
-        callback_query_flag=True,
-        pass_bot=True,
-    )
-
-    init_base_filters(
         back,
         func=lambda call: call.data == CallBackData.BACK,
         callback_query_flag=True,
@@ -112,8 +130,86 @@ def init_handlers():
     bot.register_message_handler(
         login_handler_password, pass_bot=True, state=Login.password
     )
+
+    # Сеттеры персональных данных
+    init_base_filters(
+        init_name_state,
+        func=lambda call: call.data == CallBackData.NAME,
+        callback_query_flag=True,
+        pass_bot=True,
+    )
     init_base_filters(
         set_name, pass_bot=True, state=SetName.init
+    )
+
+    init_base_filters(
+        init_dob_state,
+        func=lambda call: call.data == CallBackData.DOB,
+        callback_query_flag=True,
+        pass_bot=True,
+    )
+    init_base_filters(
+        set_dob, pass_bot=True, state=SetDob.init
+    )
+
+    init_base_filters(
+        init_group_study_state,
+        func=lambda call: call.data == CallBackData.GROUP_STUDY,
+        callback_query_flag=True,
+        pass_bot=True,
+    )
+    init_base_filters(
+        set_group_study, pass_bot=True, state=SetGroupStudy.init
+    )
+
+    init_base_filters(
+        init_phone_state,
+        func=lambda call: call.data == CallBackData.PHONE,
+        callback_query_flag=True,
+        pass_bot=True,
+    )
+    init_base_filters(
+        set_phone, pass_bot=True, state=SetPhone.init
+    )
+
+    init_base_filters(
+        init_address_state,
+        func=lambda call: call.data == CallBackData.ADDRESS,
+        callback_query_flag=True,
+        pass_bot=True,
+    )
+    init_base_filters(
+        set_address, pass_bot=True, state=SetAddress.init
+    )
+
+    init_base_filters(
+        init_email_state,
+        func=lambda call: call.data == CallBackData.EMAIL,
+        callback_query_flag=True,
+        pass_bot=True,
+    )
+    init_base_filters(
+        set_email, pass_bot=True, state=SetEmail.init
+    )
+
+    init_base_filters(
+        init_dos_state,
+        func=lambda call: call.data == CallBackData.DOS,
+        callback_query_flag=True,
+        pass_bot=True,
+    )
+    init_base_filters(
+        set_dos, pass_bot=True, state=SetDos.init
+    )
+
+    init_base_filters(
+        init_institute_state,
+        func=lambda call: call.data == CallBackData.INSTITUTE,
+        callback_query_flag=True,
+        pass_bot=True,
+    )
+    init_base_filters(
+        set_institute, pass_bot=True, state=SetInstitute.init
     )
 
     init_base_filters(

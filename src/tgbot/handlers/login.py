@@ -2,10 +2,12 @@ from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message
 
 from exceptions import ErrorMessage
+from tgbot.handlers.menu import menu_handler
 from tgbot.states.login import Login
 from tgbot.api_worker.client import APIWorker
 from tgbot.user import User
 from tgbot.utils.database import Database
+from tgbot.utils.message_tools import send_wait_smile
 from tgbot.validators.validate import check_valid_email
 from tgbot.validators.validator_handler import bind_validator
 
@@ -39,6 +41,7 @@ async def login_handler_email(message: Message, bot: AsyncTeleBot):
     await bot.set_state(message.from_user.id, Login.password, message.chat.id)
 
 
+@send_wait_smile
 async def login_handler_password(message: Message, bot: AsyncTeleBot):
     usr_id = message.from_user.id
     user = _users[usr_id]
@@ -47,9 +50,7 @@ async def login_handler_password(message: Message, bot: AsyncTeleBot):
     # Удаляем пароль пользователя из чата
     await bot.delete_message(message.chat.id, message.message_id)
 
-    await bot.send_message(message.chat.id, "Обрабатываю запрос...")
-
-    jwt = await _api.login(await user.get_email(), user.password, user.tg_id)
+    jwt = await _api.login(await user.get_email(), user.password)
 
     if jwt is None:
         await bot.send_message(message.chat.id, "Ошибка.")
@@ -59,6 +60,8 @@ async def login_handler_password(message: Message, bot: AsyncTeleBot):
         )
 
         await bot.send_message(message.chat.id, "Успешно.")
+
+        await menu_handler(message, bot)
 
     await bot.delete_state(message.from_user.id, message.chat.id)
     del _users[usr_id]

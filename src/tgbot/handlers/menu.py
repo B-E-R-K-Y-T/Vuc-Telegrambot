@@ -1,5 +1,4 @@
 import asyncio
-from http import HTTPStatus
 
 from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message, CallbackQuery, InlineKeyboardMarkup
@@ -14,11 +13,13 @@ from tgbot.keybords.squad_commander import SquadCommander
 from tgbot.keybords.student import Student
 from tgbot.user import User
 from tgbot.utils.callback_data import CallBackData, CallBackStackWorker
+from tgbot.utils.message_tools import send_wait_smile
 
 _call_back_stack = CallBackStackWorker()
 
 
 @_call_back_stack.listen_call(is_root=True)
+@send_wait_smile
 async def menu_handler(message: Message, bot: AsyncTeleBot):
     user = await User(message.from_user.id).ainit()
     role = await user.role
@@ -98,7 +99,8 @@ async def back(call: CallbackQuery, bot: AsyncTeleBot):
         if is_root:
             await bot.delete_message(
                 chat_id=chat_id,
-                message_id=_call_back_stack.get_root_id(chat_id))
+                message_id=_call_back_stack.get_root_id(chat_id)
+            )
 
         if asyncio.iscoroutinefunction(func):
             return await func(metadata, bot_)

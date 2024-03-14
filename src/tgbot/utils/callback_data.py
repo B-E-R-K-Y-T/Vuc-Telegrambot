@@ -1,10 +1,13 @@
 import asyncio
 from copy import copy
 from functools import wraps
+from pprint import pprint
 from typing import Callable
 
 from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message, CallbackQuery
+
+from tgbot.utils.message_tools import get_message
 
 
 class _auto_callback_data:
@@ -25,16 +28,16 @@ class CallBackStackWorker:
         return self.__root.get(chat_id)
 
     def set_root_id(self, chat_id: int, metadata: Message | CallbackQuery) -> None:
-        self.__root[chat_id] = self.__get_message_id(metadata)
+        self.__root[chat_id] = get_message(metadata).message_id
 
     def add_call(
-        self,
-        chat_id: int,
-        func: Callable,
-        bot: AsyncTeleBot,
-        metadata: Message | CallbackQuery,
-        message_id,
-        is_root: bool = False
+            self,
+            chat_id: int,
+            func: Callable,
+            bot: AsyncTeleBot,
+            metadata: Message | CallbackQuery,
+            message_id,
+            is_root: bool = False
     ):
         if self.__stack.get(chat_id) is None:
             self.__stack[chat_id] = []
@@ -52,16 +55,12 @@ class CallBackStackWorker:
         def decorator(func):
             @wraps(func)
             async def wrapper(
-                metadata: Message | CallbackQuery, bot: AsyncTeleBot, *args, **kwargs
+                    metadata: Message | CallbackQuery, bot: AsyncTeleBot, *args, **kwargs
             ) -> Callable:
-                if isinstance(metadata, Message):
-                    chat_id = metadata.chat.id
-                    message_id = metadata.message_id
-                elif isinstance(metadata, CallbackQuery):
-                    chat_id = metadata.message.chat.id
-                    message_id = metadata.message.message_id
-                else:
-                    raise TypeError
+                message = get_message(metadata)
+
+                chat_id = message.chat.id
+                message_id = message.message_id
 
                 self.add_call(
                     chat_id,
@@ -80,15 +79,6 @@ class CallBackStackWorker:
             return wrapper
 
         return decorator
-
-    @staticmethod
-    def __get_message_id(metadata: Message | CallbackQuery):
-        if isinstance(metadata, Message):
-            return metadata.message_id
-        elif isinstance(metadata, CallbackQuery):
-            return metadata.message.message_id
-        else:
-            raise TypeError
 
     def __repr__(self):
         return f"<{self.__class__.__name__}> STACK: {self.__stack}"

@@ -11,7 +11,6 @@ class PersonalDataButtons(BaseKeyboard):
                 "ФИО": CallBackData.NAME,
                 "День рождения": CallBackData.DOB,
                 "Номер телефона": CallBackData.PHONE,
-                "Почта": CallBackData.EMAIL,
                 "Адрес": CallBackData.ADDRESS,
                 "Институт": CallBackData.INSTITUTE,
                 "Направление обучения": CallBackData.DOS,

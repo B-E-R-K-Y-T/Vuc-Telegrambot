@@ -17,7 +17,7 @@ class Request:
         self,
         endpoint: str,
         *,
-        data: dict = None,
+        data: dict | JSONEncoder = None,
         headers: dict = None,
         method: str = "",
         cookies: dict = None,

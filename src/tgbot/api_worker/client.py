@@ -12,7 +12,7 @@ class APIWorker:
             "accept": "application/json",
         }
 
-    async def login(self, username: str, password: str, telegram_id: int) -> str | None:
+    async def login(self, username: str, password: str) -> str | None:
         """
         Вернет JWT токен в виде строки
         """

@@ -3,8 +3,10 @@ from telebot.types import Message
 
 from tgbot.api_worker.client import APIWorker
 from tgbot.user import User
+from tgbot.utils.message_tools import send_wait_smile
 
 
+@send_wait_smile
 async def self(message: Message, bot: AsyncTeleBot):
     api = APIWorker()
     user = await User(message.from_user.id).ainit()
