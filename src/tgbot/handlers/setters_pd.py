@@ -9,8 +9,13 @@ from tgbot.commands import CommandSequence
 from tgbot.states.setter_states import *
 from tgbot.user import User
 from tgbot.utils.message_tools import send_wait_smile
-from tgbot.validators.validate import check_valid_date, check_valid_phone, check_sql_injection, check_valid_email, \
-    check_group_study
+from tgbot.validators.validate import (
+    check_valid_date,
+    check_valid_phone,
+    check_sql_injection,
+    check_valid_email,
+    check_group_study,
+)
 from tgbot.validators.validator_handler import bind_validator
 
 _api = APIWorker()
@@ -114,7 +119,9 @@ async def init_group_study_state(call: CallbackQuery, bot: AsyncTeleBot):
 
 
 @send_wait_smile
-@bind_validator(validator=check_group_study, msg_err=ErrorMessage.GROUP_STUDY_INVALID_FORMAT)
+@bind_validator(
+    validator=check_group_study, msg_err=ErrorMessage.GROUP_STUDY_INVALID_FORMAT
+)
 async def set_group_study(message: Message, bot: AsyncTeleBot):
     resp = await set_attr(message, {"group_study": message.text})
 
@@ -126,9 +133,11 @@ async def check_status(pred: bool, bot, message):
         await bot.send_message(message.chat.id, "Успешно.")
         await bot.delete_state(message.from_user.id, message.chat.id)
     else:
-        await bot.send_message(message.chat.id,
-                               f"Ошибка. Попробуйте ещё раз. "
-                               f"Или отмените действие с помощью /{CommandSequence.CANCEL}")
+        await bot.send_message(
+            message.chat.id,
+            f"Ошибка. Попробуйте ещё раз. "
+            f"Или отмените действие с помощью /{CommandSequence.CANCEL}",
+        )
 
 
 async def set_attr(message: Message, attrs: dict):

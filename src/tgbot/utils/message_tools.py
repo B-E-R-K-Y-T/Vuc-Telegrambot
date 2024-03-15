@@ -17,7 +17,9 @@ def get_message(metadata: Message | CallbackQuery) -> Message:
 
 def send_wait_smile(func: Callable):
     @wraps(func)
-    async def wrapper(metadata: Message | CallbackQuery, bot: AsyncTeleBot, *args, **kwargs):
+    async def wrapper(
+        metadata: Message | CallbackQuery, bot: AsyncTeleBot, *args, **kwargs
+    ):
         message = get_message(metadata)
 
         msg_id: Message = await bot.send_message(message.chat.id, "⏳")

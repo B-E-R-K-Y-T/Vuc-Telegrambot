@@ -24,7 +24,7 @@ from tgbot.handlers.menu import (
     squad_menu,
     marks_menu,
     attend_menu,
-    personal_menu
+    personal_menu,
 )
 from tgbot.handlers.self import self
 from tgbot.handlers.setters_pd import (
@@ -69,9 +69,7 @@ def init_handlers():
     bot.register_message_handler(
         start_command_handler, commands=[CommandSequence.START], pass_bot=True
     )
-    init_base_filters(
-        self, commands=[CommandSequence.SELF], pass_bot=True
-    )
+    init_base_filters(self, commands=[CommandSequence.SELF], pass_bot=True)
     init_base_filters(logout_handler, commands=[CommandSequence.LOGOUT], pass_bot=True)
     init_base_filters(menu_handler, commands=[CommandSequence.MENU], pass_bot=True)
 
@@ -138,9 +136,7 @@ def init_handlers():
         callback_query_flag=True,
         pass_bot=True,
     )
-    init_base_filters(
-        set_name, pass_bot=True, state=SetName.init
-    )
+    init_base_filters(set_name, pass_bot=True, state=SetName.init)
 
     init_base_filters(
         init_dob_state,
@@ -148,9 +144,7 @@ def init_handlers():
         callback_query_flag=True,
         pass_bot=True,
     )
-    init_base_filters(
-        set_dob, pass_bot=True, state=SetDob.init
-    )
+    init_base_filters(set_dob, pass_bot=True, state=SetDob.init)
 
     init_base_filters(
         init_group_study_state,
@@ -158,9 +152,7 @@ def init_handlers():
         callback_query_flag=True,
         pass_bot=True,
     )
-    init_base_filters(
-        set_group_study, pass_bot=True, state=SetGroupStudy.init
-    )
+    init_base_filters(set_group_study, pass_bot=True, state=SetGroupStudy.init)
 
     init_base_filters(
         init_phone_state,
@@ -168,9 +160,7 @@ def init_handlers():
         callback_query_flag=True,
         pass_bot=True,
     )
-    init_base_filters(
-        set_phone, pass_bot=True, state=SetPhone.init
-    )
+    init_base_filters(set_phone, pass_bot=True, state=SetPhone.init)
 
     init_base_filters(
         init_address_state,
@@ -178,9 +168,7 @@ def init_handlers():
         callback_query_flag=True,
         pass_bot=True,
     )
-    init_base_filters(
-        set_address, pass_bot=True, state=SetAddress.init
-    )
+    init_base_filters(set_address, pass_bot=True, state=SetAddress.init)
 
     init_base_filters(
         init_email_state,
@@ -188,9 +176,7 @@ def init_handlers():
         callback_query_flag=True,
         pass_bot=True,
     )
-    init_base_filters(
-        set_email, pass_bot=True, state=SetEmail.init
-    )
+    init_base_filters(set_email, pass_bot=True, state=SetEmail.init)
 
     init_base_filters(
         init_dos_state,
@@ -198,9 +184,7 @@ def init_handlers():
         callback_query_flag=True,
         pass_bot=True,
     )
-    init_base_filters(
-        set_dos, pass_bot=True, state=SetDos.init
-    )
+    init_base_filters(set_dos, pass_bot=True, state=SetDos.init)
 
     init_base_filters(
         init_institute_state,
@@ -208,9 +192,7 @@ def init_handlers():
         callback_query_flag=True,
         pass_bot=True,
     )
-    init_base_filters(
-        set_institute, pass_bot=True, state=SetInstitute.init
-    )
+    init_base_filters(set_institute, pass_bot=True, state=SetInstitute.init)
 
     init_base_filters(
         default_answer,

@@ -19,7 +19,7 @@ class CheckLogin(SimpleCustomFilter):
             await self.bot.send_message(
                 message.chat.id,
                 f"Вы не вошли в систему.\n\n"
-                f"Чтобы войти, используйте команду: /{CommandSequence.LOGIN}"
+                f"Чтобы войти, используйте команду: /{CommandSequence.LOGIN}",
             )
             return False
 

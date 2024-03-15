@@ -15,6 +15,6 @@ async def self(message: Message, bot: AsyncTeleBot):
     user_id = user.user_id
 
     data = await api.get_self(token, user_id)
-    format_data = ''.join([f"* {k} = {v}\n" for k, v in data.items()])
+    format_data = "".join([f"* {k} = {v}\n" for k, v in data.items()])
 
     await bot.send_message(message.chat.id, f"{format_data}")

@@ -117,8 +117,8 @@ class APIWorker:
     async def set_user_attr(self, token: str, attrs: dict) -> str:
         headers = copy(self.headers)
 
-        headers['accept'] = '*/*'
-        headers['Content-Type'] = 'application/json'
+        headers["accept"] = "*/*"
+        headers["Content-Type"] = "application/json"
 
         resp = await self.request.patch(
             "/users/set_user_attr",
@@ -130,6 +130,4 @@ class APIWorker:
         return resp
 
 
-__all__ = (
-    APIWorker.__name__,
-)
+__all__ = (APIWorker.__name__,)

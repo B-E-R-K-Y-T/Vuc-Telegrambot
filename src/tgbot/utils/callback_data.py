@@ -31,13 +31,13 @@ class CallBackStackWorker:
         self.__root[chat_id] = get_message(metadata).message_id
 
     def add_call(
-            self,
-            chat_id: int,
-            func: Callable,
-            bot: AsyncTeleBot,
-            metadata: Message | CallbackQuery,
-            message_id,
-            is_root: bool = False
+        self,
+        chat_id: int,
+        func: Callable,
+        bot: AsyncTeleBot,
+        metadata: Message | CallbackQuery,
+        message_id,
+        is_root: bool = False,
     ):
         if self.__stack.get(chat_id) is None:
             self.__stack[chat_id] = []
@@ -46,7 +46,9 @@ class CallBackStackWorker:
 
     def go_root(self, func) -> Callable:
         @wraps(func)
-        async def wrapper(metadata: Message | CallbackQuery, bot: AsyncTeleBot, *args, **kwargs):
+        async def wrapper(
+            metadata: Message | CallbackQuery, bot: AsyncTeleBot, *args, **kwargs
+        ):
             chat_id = get_message(metadata).chat.id
             if not self.__stack[chat_id]:
                 return
@@ -55,8 +57,7 @@ class CallBackStackWorker:
 
             if is_root:
                 await bot.delete_message(
-                    chat_id=chat_id,
-                    message_id=self.get_root_id(chat_id)
+                    chat_id=chat_id, message_id=self.get_root_id(chat_id)
                 )
 
             self.__stack.clear()
@@ -66,7 +67,7 @@ class CallBackStackWorker:
                 bot,
                 root_metadata,
                 get_message(root_metadata).message_id,
-                is_root=is_root
+                is_root=is_root,
             )
 
             if asyncio.iscoroutinefunction(root_func):
@@ -89,7 +90,7 @@ class CallBackStackWorker:
         def decorator(func):
             @wraps(func)
             async def wrapper(
-                    metadata: Message | CallbackQuery, bot: AsyncTeleBot, *args, **kwargs
+                metadata: Message | CallbackQuery, bot: AsyncTeleBot, *args, **kwargs
             ) -> Callable:
                 message = get_message(metadata)
 
@@ -99,14 +100,7 @@ class CallBackStackWorker:
                 if is_root:
                     self.__stack.clear()
 
-                self.add_call(
-                    chat_id,
-                    func,
-                    bot,
-                    metadata,
-                    message_id,
-                    is_root=is_root
-                )
+                self.add_call(chat_id, func, bot, metadata, message_id, is_root=is_root)
 
                 if asyncio.iscoroutinefunction(func):
                     return await func(metadata, bot, *args, **kwargs)
@@ -158,4 +152,5 @@ class CallBackData:
 
 __all__ = (
     CallBackData.__name__,
+    CallBackStackWorker.__name__,
 )

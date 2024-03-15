@@ -6,9 +6,7 @@ from tgbot.utils.callback_data import CallBackData
 
 class MarksButtons(BaseKeyboard):
     def __init__(self, semesters: list):
-        super().__init__(
-            buttons={"Назад": CallBackData.BACK}
-        )
+        super().__init__(buttons={"Назад": CallBackData.BACK})
 
         self.semesters: list = semesters
 
@@ -27,7 +25,7 @@ class MarksButtons(BaseKeyboard):
         semester_buttons = {}
 
         for semester in self.semesters:
-            name = f'{semester} Семестр'
+            name = f"{semester} Семестр"
             semester_buttons[name] = callback_map.get(semester)
 
         self.update_buttons(semester_buttons)

@@ -35,8 +35,10 @@ async def check_sql_injection(message: Message) -> bool:
     pattern = r"^[^';]*$"
 
     return _validate(
-        re.search(pattern, message.text) and not any(
-                op in message.text.upper() for op in ["INSERT", "UPDATE", "DELETE", "DROP", "TRUNCATE", "ALTER"]
+        re.search(pattern, message.text)
+        and not any(
+            op in message.text.upper()
+            for op in ["INSERT", "UPDATE", "DELETE", "DROP", "TRUNCATE", "ALTER"]
         )
     )
 
