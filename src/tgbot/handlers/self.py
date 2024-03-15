@@ -2,17 +2,17 @@ from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message
 
 from tgbot.api_worker.client import APIWorker
-from tgbot.user import User
+from tgbot.user import UsersFactory
 from tgbot.utils.message_tools import send_wait_smile
 
 
 @send_wait_smile
 async def self(message: Message, bot: AsyncTeleBot):
     api = APIWorker()
-    user = await User(message.chat.id).ainit()
+    user = await UsersFactory().get_user(message)
 
-    token = user.token
-    user_id = user.user_id
+    token = await user.token
+    user_id = await user.user_id
 
     data = await api.get_self(token, user_id)
     format_data = "".join([f"* {k} = {v}\n" for k, v in data.items()])

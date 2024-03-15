@@ -7,7 +7,7 @@ from exceptions import ErrorMessage
 from tgbot.api_worker.client import APIWorker
 from tgbot.commands import CommandSequence
 from tgbot.states.setter_states import *
-from tgbot.user import User
+from tgbot.user import UsersFactory
 from tgbot.utils.message_tools import send_wait_smile
 from tgbot.validators.validate import (
     check_valid_date,
@@ -141,7 +141,7 @@ async def check_status(pred: bool, bot, message):
 
 
 async def set_attr(message: Message, attrs: dict):
-    user = await User(message.from_user.id).ainit()
+    user = await UsersFactory().get_user(message)
 
-    result: dict = {"id": user.user_id, "data": attrs}
-    return await _api.set_user_attr(user.token, result)
+    result: dict = {"id": await user.user_id, "data": attrs}
+    return await _api.set_user_attr(await user.token, result)

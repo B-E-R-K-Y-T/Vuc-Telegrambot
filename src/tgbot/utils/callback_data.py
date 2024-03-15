@@ -166,7 +166,8 @@ class CallBackStackWorker:
                 message_id = message.message_id
 
                 if is_root:
-                    self.__stack.clear()
+                    if chat_id in self.__stack:
+                        self.__stack[chat_id].clear()
 
                 self.add_call(chat_id, func, bot, metadata, message_id, is_root=is_root)
 

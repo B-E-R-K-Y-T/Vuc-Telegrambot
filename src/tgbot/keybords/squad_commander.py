@@ -7,10 +7,6 @@ from tgbot.utils.callback_data import CallBackData
 class SquadCommander(BaseKeyboard):
     def __init__(self, *args, **kwargs):
         super().__init__(
-            buttons={
-                "Меню командира отделения": CallBackData.SQUAD_MENU,
-                "Меню студента": CallBackData.STUDENT_MENU,
-            },
             *args, **kwargs
         )
 

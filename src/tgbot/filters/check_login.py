@@ -2,7 +2,7 @@ from telebot.asyncio_filters import SimpleCustomFilter
 from telebot.types import Message
 from telebot.async_telebot import AsyncTeleBot
 
-from tgbot.user import User
+from tgbot.user import UsersFactory
 from tgbot.commands import CommandSequence
 
 
@@ -13,9 +13,9 @@ class CheckLogin(SimpleCustomFilter):
         self.bot: AsyncTeleBot = bot
 
     async def check(self, message: Message):
-        user = await User(message.from_user.id).ainit()
+        user = await UsersFactory().get_user(message)
 
-        if user.token is None:
+        if await user.token is None:
             await self.bot.send_message(
                 message.chat.id,
                 f"Вы не вошли в систему.\n\n"

@@ -51,7 +51,7 @@ class APIWorker:
         )
 
         if resp.status == HTTPStatus.OK.value:
-            return (await resp.json())["id"]
+            return await resp.json()
 
     async def get_id_from_email(self, token: str, email: str) -> int:
         resp = await self.request.get(
@@ -62,7 +62,7 @@ class APIWorker:
         )
 
         if resp.status == HTTPStatus.OK.value:
-            return (await resp.json())["id"]
+            return await resp.json()
 
     async def get_user_role(self, token: str, user_id: int) -> str:
         resp = await self.request.get(
@@ -73,9 +73,9 @@ class APIWorker:
         )
 
         if resp.status == HTTPStatus.OK.value:
-            return (await resp.json())["role"]
+            return await resp.json()
 
-    async def get_self(self, token: str, user_id: int) -> str:
+    async def get_self(self, token: str, user_id: int) -> dict:
         resp = await self.request.get(
             "/users/get_self",
             headers=self.headers,
@@ -84,6 +84,21 @@ class APIWorker:
         )
 
         if resp.status == HTTPStatus.OK.value:
+            return await resp.json()
+
+    async def get_user_full_data(self, token: str, user_id: int) -> dict:
+        resp = await self.request.get(
+            "/users/get_user_full_data",
+            headers=self.headers,
+            cookies={"bonds": token},
+            params={"user_id": user_id},
+        )
+
+        if resp.status == HTTPStatus.OK.value:
+            result = await resp.json()
+
+            result["id"]
+
             return await resp.json()
 
     async def get_semesters(self, token: str, user_id: int) -> list[int]:
@@ -114,6 +129,116 @@ class APIWorker:
             headers=self.headers,
             cookies={"bonds": token},
             params={"user_id": user_id, "semester": semester},
+        )
+
+        if resp.status == HTTPStatus.OK.value:
+            return await resp.json()
+
+    async def get_students_by_squad(self, token: str, platoon_number: int, squad_number: int) -> list[dict]:
+        resp = await self.request.get(
+            "/squad/get_students_by_squad",
+            headers=self.headers,
+            cookies={"bonds": token},
+            params={"platoon_number": platoon_number, "squad_number": squad_number},
+        )
+
+        if resp.status == HTTPStatus.OK.value:
+            return await resp.json()
+
+    async def get_squad_user(self, token: str, user_id: int) -> int:
+        resp = await self.request.get(
+            "/users/get_squad_user",
+            headers=self.headers,
+            cookies={"bonds": token},
+            params={"user_id": user_id},
+        )
+
+        if resp.status == HTTPStatus.OK.value:
+            return await resp.json()
+
+    async def get_platoon_number(self, token: str, user_id: int) -> int:
+        resp = await self.request.get(
+            "/users/get_platoon_user",
+            headers=self.headers,
+            cookies={"bonds": token},
+            params={"user_id": user_id},
+        )
+
+        if resp.status == HTTPStatus.OK.value:
+            return await resp.json()
+
+    async def get_user_name(self, token: str, user_id: int) -> str:
+        resp = await self.request.get(
+            "/users/get_user_name",
+            headers=self.headers,
+            cookies={"bonds": token},
+            params={"user_id": user_id},
+        )
+
+        if resp.status == HTTPStatus.OK.value:
+            return await resp.json()
+
+    async def get_user_phone(self, token: str, user_id: int) -> int:
+        resp = await self.request.get(
+            "/users/get_user_phone",
+            headers=self.headers,
+            cookies={"bonds": token},
+            params={"user_id": user_id},
+        )
+
+        if resp.status == HTTPStatus.OK.value:
+            return await resp.json()
+
+    async def get_user_date_of_birth(self, token: str, user_id: int) -> int:
+        resp = await self.request.get(
+            "/users/get_user_date_of_birth",
+            headers=self.headers,
+            cookies={"bonds": token},
+            params={"user_id": user_id},
+        )
+
+        if resp.status == HTTPStatus.OK.value:
+            return await resp.json()
+
+    async def get_user_institute(self, token: str, user_id: int) -> int:
+        resp = await self.request.get(
+            "/users/get_user_institute",
+            headers=self.headers,
+            cookies={"bonds": token},
+            params={"user_id": user_id},
+        )
+
+        if resp.status == HTTPStatus.OK.value:
+            return await resp.json()
+
+    async def get_user_address(self, token: str, user_id: int) -> int:
+        resp = await self.request.get(
+            "/users/get_user_address",
+            headers=self.headers,
+            cookies={"bonds": token},
+            params={"user_id": user_id},
+        )
+
+        if resp.status == HTTPStatus.OK.value:
+            return await resp.json()
+
+    async def get_user_group_study(self, token: str, user_id: int) -> int:
+        resp = await self.request.get(
+            "/users/get_user_group_study",
+            headers=self.headers,
+            cookies={"bonds": token},
+            params={"user_id": user_id},
+        )
+
+        if resp.status == HTTPStatus.OK.value:
+            return await resp.json()
+
+    async def get_user_direction_of_study(self, token: str, user_id: int) -> int:
+        resp = await self.request.get(
+            "/users/get_user_direction_of_study",
+            headers=self.headers,
+            cookies={"bonds": token},
+            params={"user_id": user_id},
         )
 
         if resp.status == HTTPStatus.OK.value:

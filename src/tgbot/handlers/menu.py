@@ -7,14 +7,13 @@ from config import Roles
 from tgbot.api_worker.client import APIWorker
 from tgbot.commands import CommandSequence
 from tgbot.handlers.self import self
-from tgbot.keybords.base_keyboard import TextButton
 from tgbot.keybords.marks import MarksButtons
 from tgbot.keybords.personal_data import PersonalDataButtons
 from tgbot.keybords.platoon_buttons import PlatoonButtons
 from tgbot.keybords.platoon_commander import PlatoonCommander
 from tgbot.keybords.squad_commander import SquadCommander
 from tgbot.keybords.student import Student
-from tgbot.user import User
+from tgbot.user import UsersFactory
 from tgbot.utils.callback_data import CallBackData, CallBackStackWorker
 from tgbot.utils.message_tools import send_wait_smile, get_message
 
@@ -22,10 +21,10 @@ _api = APIWorker()
 _callback_stack = CallBackStackWorker()
 
 
-@_callback_stack.listen_call(is_root=True)
 @send_wait_smile
+@_callback_stack.listen_call(is_root=True)
 async def menu_handler(message: Message, bot: AsyncTeleBot):
-    user = await User(message.chat.id).ainit()
+    user = await UsersFactory().get_user(message)
     role = await user.role
 
     keyboard = None
@@ -54,7 +53,33 @@ async def student_menu(call: CallbackQuery, bot: AsyncTeleBot):
 
 @_callback_stack.listen_call()
 async def squad_menu(call: CallbackQuery, bot: AsyncTeleBot):
-    keyboard = SquadCommander().menu()
+    user = await UsersFactory().get_user(call)
+
+    buttons = {}
+
+    if not user.get_subordinate_users():
+
+        platoon_number = await user.platoon_number
+        squad_number = await user.squad_number
+        students = await _api.get_students_by_squad(await user.token, platoon_number, squad_number)
+
+        for student in students:
+            if student["role"] == Roles.student:
+                user_id = student.pop("id")
+
+                buttons[student["name"]] = user_id
+                student["user_id"] = user_id
+
+                await user.add_subordinate_user(UsersFactory().create_user(student))
+    else:
+        for student in user.get_subordinate_users().values():
+            if await student.role == Roles.student:
+                user_id = await student.user_id
+                name = await student.name
+
+                buttons[name] = user_id
+
+    keyboard = SquadCommander().menu(buttons)
 
     await send_buttons(call, bot, "Меню командира отделения", keyboard)
 
@@ -68,8 +93,8 @@ async def platoon_menu(call: CallbackQuery, bot: AsyncTeleBot):
 
 @_callback_stack.listen_call()
 async def marks_menu(call: CallbackQuery, bot: AsyncTeleBot):
-    user = await User(call.message.chat.id).ainit()
-    semesters = await _api.get_semesters(user.token, user.user_id)
+    user = await UsersFactory().get_user(call)
+    semesters = await _api.get_semesters(await user.token, await user.user_id)
     keyboard = MarksButtons(semesters).menu()
 
     await send_buttons(call, bot, "Оценки", keyboard)
@@ -78,17 +103,17 @@ async def marks_menu(call: CallbackQuery, bot: AsyncTeleBot):
 @send_wait_smile
 async def send_marks(call: CallbackQuery, bot: AsyncTeleBot):
     callback_map = {
-        CallBackData.SEMESTER_ONE:   1,
-        CallBackData.SEMESTER_TWO:   2,
+        CallBackData.SEMESTER_ONE: 1,
+        CallBackData.SEMESTER_TWO: 2,
         CallBackData.SEMESTER_THREE: 3,
-        CallBackData.SEMESTER_FOUR:  4,
-        CallBackData.SEMESTER_FIVE:  5,
-        CallBackData.SEMESTER_SIX:   6,
+        CallBackData.SEMESTER_FOUR: 4,
+        CallBackData.SEMESTER_FIVE: 5,
+        CallBackData.SEMESTER_SIX: 6,
     }
 
-    user = await User(call.message.chat.id).ainit()
+    user = await UsersFactory().get_user(call)
 
-    attends = await _api.get_marks_by_semester(user.token, user.user_id, callback_map.get(call.data))
+    attends = await _api.get_marks_by_semester(await user.token, await user.user_id, callback_map.get(call.data))
 
     msg = ""
 
@@ -120,9 +145,9 @@ async def view_pd(call: CallbackQuery, bot: AsyncTeleBot):
 
 @send_wait_smile
 async def attend_menu(call: CallbackQuery, bot: AsyncTeleBot):
-    user = await User(call.message.chat.id).ainit()
+    user = await UsersFactory().get_user(call)
 
-    attends = await _api.get_attend(user.token, user.user_id)
+    attends = await _api.get_attend(await user.token, await user.user_id)
 
     if attends:
         msg = ''
