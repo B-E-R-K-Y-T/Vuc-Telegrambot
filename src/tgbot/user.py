@@ -13,13 +13,14 @@ class User:
         self.db = Database()
         self.api = APIWorker()
         self.user_id: Optional[int] = None
+        self.token: Optional[str] = None
 
     async def ainit(self):
-        token = await self.get_jwt()
+        self.token = await self.get_jwt()
 
-        if token is not None:
+        if self.token is not None:
             self.user_id: int = await self.api.get_id_from_email(
-                token, await self.get_email()
+                self.token, await self.get_email()
             )
 
         return self

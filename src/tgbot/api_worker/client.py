@@ -92,6 +92,17 @@ class APIWorker:
         if resp.status == HTTPStatus.OK.value:
             return await resp.json()
 
+    async def get_semesters(self, token: str, user_id: int) -> list[int]:
+        resp = await self.request.get(
+            "/professor/get_semesters",
+            headers=self.headers,
+            cookies={"bonds": token},
+            params={"user_id": user_id},
+        )
+
+        if resp.status == HTTPStatus.OK.value:
+            return [int(sem) for sem in (await resp.json())["semesters"]]
+
     async def set_user_attr(self, token: str, attrs: dict) -> str:
         headers = copy(self.headers)
 
