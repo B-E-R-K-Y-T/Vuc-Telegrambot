@@ -132,8 +132,7 @@ async def check_status(pred: bool, bot, message):
 
 async def set_attr(message: Message, attrs: dict):
     user = await User(message.from_user.id).ainit()
-    token = await user.get_jwt()
-    user_id = await _api.get_id_from_email(token, await user.get_email())
+    user_id = await _api.get_id_from_email(user.token, await user.get_email())
 
     result: dict = {"id": user_id, "data": attrs}
-    return await _api.set_user_attr(token, result)
+    return await _api.set_user_attr(user.token, result)

@@ -80,8 +80,25 @@ async def personal_menu(call: CallbackQuery, bot: AsyncTeleBot):
     await send_buttons(call, bot, "Персональные данные", keyboard)
 
 
+@_callback_stack.go_root
+@send_wait_smile
 async def attend_menu(call: CallbackQuery, bot: AsyncTeleBot):
-    await bot.send_message(call.message.chat.id, 'Посещаемость топ епт')
+    user = await User(call.message.chat.id).ainit()
+
+    attends = await _api.get_attend(user.token, user.user_id)
+
+    if attends:
+        msg = ''
+
+        for attend in attends:
+            msg += (f"Дата: {attend["date_v"]}\n"
+                    f"Присутствовал: {"Да" if attend["visiting"] else "Нет"}\n"
+                    f"Семестр: {attend["semester"]}\n"
+                    f"Подтверждено: {"Да" if attend["confirmed"] else "Нет"}\n\n")
+
+        await bot.send_message(call.message.chat.id, msg)
+    else:
+        await bot.send_message(call.message.chat.id, "Информация отсутствует.")
 
 
 async def send_buttons(call: CallbackQuery, bot: AsyncTeleBot, text: str, keyboard: InlineKeyboardMarkup):

@@ -44,6 +44,40 @@ class CallBackStackWorker:
 
         self.__stack[chat_id].append({func: (metadata, bot, message_id, is_root)})
 
+    def go_root(self, func) -> Callable:
+        @wraps(func)
+        async def wrapper(metadata: Message | CallbackQuery, bot: AsyncTeleBot, *args, **kwargs):
+            chat_id = get_message(metadata).chat.id
+            if not self.__stack[chat_id]:
+                return
+
+            root_func, (root_metadata, root_bot, _, is_root) = self.__stack[chat_id][0].popitem()
+
+            if is_root:
+                await bot.delete_message(
+                    chat_id=chat_id,
+                    message_id=self.get_root_id(chat_id)
+                )
+
+            self.__stack.clear()
+            self.add_call(
+                chat_id,
+                root_func,
+                bot,
+                root_metadata,
+                get_message(root_metadata).message_id,
+                is_root=is_root
+            )
+
+            if asyncio.iscoroutinefunction(root_func):
+                await func(metadata, bot, *args, **kwargs)
+                return await root_func(root_metadata, root_bot)
+            else:
+                func(metadata, bot, *args, **kwargs)
+                return root_func(root_metadata, root_bot)
+
+        return wrapper
+
     def get_last_call(self, chat_id: int) -> dict:
         if self.__stack.get(chat_id) is not None:
             if len(self.__stack[chat_id]) >= 2:
@@ -61,6 +95,9 @@ class CallBackStackWorker:
 
                 chat_id = message.chat.id
                 message_id = message.message_id
+
+                if is_root:
+                    self.__stack.clear()
 
                 self.add_call(
                     chat_id,
