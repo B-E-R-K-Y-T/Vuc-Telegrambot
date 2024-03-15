@@ -5,12 +5,13 @@ from tgbot.utils.callback_data import CallBackData
 
 
 class SquadCommander(BaseKeyboard):
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         super().__init__(
             buttons={
                 "Меню командира отделения": CallBackData.SQUAD_MENU,
                 "Меню студента": CallBackData.STUDENT_MENU,
-            }
+            },
+            *args, **kwargs
         )
 
     def menu(self, new_buttons: Optional[dict] = None):

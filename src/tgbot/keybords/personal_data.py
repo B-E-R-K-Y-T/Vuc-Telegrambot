@@ -1,11 +1,11 @@
 from typing import Optional
 
-from tgbot.keybords.base_keyboard import BaseKeyboard
+from tgbot.keybords.base_keyboard import BaseKeyboard, TextButton
 from tgbot.utils.callback_data import CallBackData
 
 
 class PersonalDataButtons(BaseKeyboard):
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         super().__init__(
             buttons={
                 "ФИО": CallBackData.NAME,
@@ -14,9 +14,9 @@ class PersonalDataButtons(BaseKeyboard):
                 "Адрес": CallBackData.ADDRESS,
                 "Институт": CallBackData.INSTITUTE,
                 "Направление обучения": CallBackData.DOS,
-                "Группа обучения": CallBackData.GROUP_STUDY,
-                "Назад": CallBackData.BACK,
-            }
+                "Группа обучения": CallBackData.GROUP_STUDY
+            },
+            *args, **kwargs
         )
 
     def menu(self, new_buttons: Optional[dict] = None):

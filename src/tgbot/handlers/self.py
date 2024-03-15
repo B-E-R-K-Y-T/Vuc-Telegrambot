@@ -9,7 +9,7 @@ from tgbot.utils.message_tools import send_wait_smile
 @send_wait_smile
 async def self(message: Message, bot: AsyncTeleBot):
     api = APIWorker()
-    user = await User(message.from_user.id).ainit()
+    user = await User(message.chat.id).ainit()
 
     token = user.token
     user_id = user.user_id

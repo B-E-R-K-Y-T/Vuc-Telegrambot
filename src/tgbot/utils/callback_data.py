@@ -5,7 +5,8 @@ from pprint import pprint
 from typing import Callable
 
 from telebot.async_telebot import AsyncTeleBot
-from telebot.types import Message, CallbackQuery
+from telebot.types import Message, CallbackQuery, Update
+from typing_extensions import Awaitable
 
 from tgbot.utils.message_tools import get_message
 
@@ -21,7 +22,7 @@ class _auto_callback_data:
 
 class CallBackStackWorker:
     def __init__(self):
-        self.__stack: dict[int, list[dict[Callable, tuple]]] = {}
+        self.__stack: dict[int, list[dict[Callable | Awaitable, tuple]]] = {}
         self.__root: dict = {}
 
     def get_root_id(self, chat_id: int) -> int | None:
@@ -30,24 +31,93 @@ class CallBackStackWorker:
     def set_root_id(self, chat_id: int, metadata: Message | CallbackQuery) -> None:
         self.__root[chat_id] = get_message(metadata).message_id
 
+    async def __call(
+            self,
+            chat_id: int,
+            func: Callable | Awaitable,
+            bot: AsyncTeleBot,
+            metadata: Message | CallbackQuery,
+            is_root: bool,
+            *args,
+            **kwargs
+    ) -> None:
+        self.add_call(
+            chat_id,
+            func,
+            bot,
+            metadata,
+            get_message(metadata).message_id,
+            is_root=is_root,
+        )
+
+        if asyncio.iscoroutinefunction(func):
+            await func(metadata, bot, )
+        else:
+            func(metadata, bot, *args, **kwargs)
+
+    def __replace_metadata_in_chat(self, chat_id: int, metadata: Message | CallbackQuery) -> None:
+        new_metadata = {}
+
+        for idx, call_obj in enumerate(self.__stack[chat_id]):
+            for func, (old_metadata, bot, message_id, is_root) in call_obj.items():
+                new_metadata[func] = (metadata, bot, message_id, is_root)
+
+            for func in new_metadata.keys():
+                call_obj[func] = new_metadata[func]
+
+    def resend(self, func: Callable | Awaitable) -> Callable | Awaitable:
+        raise Warning('Нуждается в доработке')
+
+        # async def wrapper(metadata: Message | CallbackQuery, bot: AsyncTeleBot, *args, **kwargs):
+        #     chat_id = get_message(metadata).chat.id
+        #     if not self.__stack[chat_id]:
+        #         return
+        #
+        #     if asyncio.iscoroutinefunction(func):
+        #         await func(metadata, bot, *args, **kwargs)
+        #     else:
+        #         func(metadata, bot, *args, **kwargs)
+        #
+        #     func_, (metadata_, bot_, _, is_root) = self.__stack[chat_id][-1].popitem()
+        #     del self.__stack[chat_id][-1]
+        #
+        #     message = get_message(metadata_)
+        #     await bot.delete_message(message.chat.id, message.message_id)
+        #
+        #     new_metadata = await bot.send_message(message.chat.id, message.text)
+        #
+        #     self.__replace_metadata_in_chat(message.chat.id, new_metadata)
+        #
+        #     res = await self.__call(
+        #         chat_id=chat_id,
+        #         func=func_,
+        #         metadata=new_metadata,
+        #         bot=bot_,
+        #         is_root=is_root,
+        #     )
+        #
+        #     return res
+        #
+        # return wrapper
+
     def add_call(
-        self,
-        chat_id: int,
-        func: Callable,
-        bot: AsyncTeleBot,
-        metadata: Message | CallbackQuery,
-        message_id,
-        is_root: bool = False,
+            self,
+            chat_id: int,
+            func: Callable,
+            bot: AsyncTeleBot,
+            metadata: Message | CallbackQuery,
+            message_id,
+            is_root: bool = False,
     ):
         if self.__stack.get(chat_id) is None:
             self.__stack[chat_id] = []
 
         self.__stack[chat_id].append({func: (metadata, bot, message_id, is_root)})
 
-    def go_root(self, func) -> Callable:
+    def go_root(self, func: Callable | Awaitable) -> Callable | Awaitable:
         @wraps(func)
         async def wrapper(
-            metadata: Message | CallbackQuery, bot: AsyncTeleBot, *args, **kwargs
+                metadata: Message | CallbackQuery, bot: AsyncTeleBot, *args, **kwargs
         ):
             chat_id = get_message(metadata).chat.id
             if not self.__stack[chat_id]:
@@ -61,21 +131,19 @@ class CallBackStackWorker:
                 )
 
             self.__stack.clear()
-            self.add_call(
-                chat_id,
-                root_func,
-                bot,
-                root_metadata,
-                get_message(root_metadata).message_id,
-                is_root=is_root,
-            )
 
-            if asyncio.iscoroutinefunction(root_func):
+            if asyncio.iscoroutinefunction(func):
                 await func(metadata, bot, *args, **kwargs)
-                return await root_func(root_metadata, root_bot)
             else:
                 func(metadata, bot, *args, **kwargs)
-                return root_func(root_metadata, root_bot)
+
+            return await self.__call(
+                chat_id=chat_id,
+                func=root_func,
+                metadata=root_metadata,
+                bot=bot,
+                is_root=is_root,
+            )
 
         return wrapper
 
@@ -90,7 +158,7 @@ class CallBackStackWorker:
         def decorator(func):
             @wraps(func)
             async def wrapper(
-                metadata: Message | CallbackQuery, bot: AsyncTeleBot, *args, **kwargs
+                    metadata: Message | CallbackQuery, bot: AsyncTeleBot, *args, **kwargs
             ) -> Callable:
                 message = get_message(metadata)
 
@@ -118,6 +186,7 @@ class CallBackStackWorker:
 class CallBackData:
     MARK = _auto_callback_data()
     ATTEND = _auto_callback_data()
+    EDIT_PERSONAL_DATA = _auto_callback_data()
     PERSONAL_DATA = _auto_callback_data()
 
     SEMESTER_ONE = _auto_callback_data()
@@ -148,6 +217,7 @@ class CallBackData:
     TELEGRAM_ID = _auto_callback_data()
 
     BACK = _auto_callback_data()
+    REOPEN_MENU = _auto_callback_data()
 
 
 __all__ = (

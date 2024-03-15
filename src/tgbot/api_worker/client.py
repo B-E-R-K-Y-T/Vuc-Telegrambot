@@ -29,12 +29,6 @@ class APIWorker:
 
         if resp.status == HTTPStatus.NO_CONTENT.value:
             token = resp.cookies.get("bonds").value
-            # del self.headers['Content-Type']
-            #
-            # await self.request.patch('/users/set_user_attr',
-            #                          headers=self.headers,
-            #                          data={'telegram_id': telegram_id},
-            #                          cookies={'bonds': token})
 
             return token
 
@@ -114,6 +108,17 @@ class APIWorker:
         if resp.status == HTTPStatus.OK.value:
             return await resp.json()
 
+    async def get_marks_by_semester(self, token: str, user_id: int, semester: int) -> list[int]:
+        resp = await self.request.get(
+            "/users/get_marks_by_semester",
+            headers=self.headers,
+            cookies={"bonds": token},
+            params={"user_id": user_id, "semester": semester},
+        )
+
+        if resp.status == HTTPStatus.OK.value:
+            return await resp.json()
+
     async def set_user_attr(self, token: str, attrs: dict) -> str:
         headers = copy(self.headers)
 
@@ -130,4 +135,6 @@ class APIWorker:
         return resp
 
 
-__all__ = (APIWorker.__name__,)
+__all__ = (
+    APIWorker.__name__,
+)

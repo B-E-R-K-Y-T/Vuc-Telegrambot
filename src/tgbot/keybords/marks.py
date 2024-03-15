@@ -1,12 +1,12 @@
 from typing import Optional
 
-from tgbot.keybords.base_keyboard import BaseKeyboard
+from tgbot.keybords.base_keyboard import BaseKeyboard, TextButton
 from tgbot.utils.callback_data import CallBackData
 
 
 class MarksButtons(BaseKeyboard):
-    def __init__(self, semesters: list):
-        super().__init__(buttons={"Назад": CallBackData.BACK})
+    def __init__(self, semesters: list, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         self.semesters: list = semesters
 
@@ -30,4 +30,4 @@ class MarksButtons(BaseKeyboard):
 
         self.update_buttons(semester_buttons)
 
-        return self.build_keyboard(dict(sorted(self.buttons.items())))
+        return self.build_keyboard(self.buttons)

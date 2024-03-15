@@ -5,13 +5,15 @@ from tgbot.utils.callback_data import CallBackData
 
 
 class Student(BaseKeyboard):
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         super().__init__(
             buttons={
                 "Оценки": CallBackData.MARK,
                 "Посещаемость": CallBackData.ATTEND,
-                "Личная информация": CallBackData.PERSONAL_DATA,
-            }
+                "Персональные данные": CallBackData.PERSONAL_DATA,
+                "Изменить персональные данные": CallBackData.EDIT_PERSONAL_DATA,
+            },
+            *args, **kwargs
         )
 
     def menu(self, new_buttons: Optional[dict] = None):

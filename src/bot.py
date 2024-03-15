@@ -24,7 +24,7 @@ from tgbot.handlers.menu import (
     squad_menu,
     marks_menu,
     attend_menu,
-    personal_menu,
+    personal_menu, send_marks, reopen_menu, view_pd,
 )
 from tgbot.handlers.self import self
 from tgbot.handlers.setters_pd import (
@@ -105,7 +105,7 @@ def init_handlers():
     )
     init_base_filters(
         personal_menu,
-        func=lambda call: call.data == CallBackData.PERSONAL_DATA,
+        func=lambda call: call.data == CallBackData.EDIT_PERSONAL_DATA,
         callback_query_flag=True,
         pass_bot=True,
     )
@@ -193,6 +193,60 @@ def init_handlers():
         pass_bot=True,
     )
     init_base_filters(set_institute, pass_bot=True, state=SetInstitute.init)
+    # ------------------------------------------------------------------------------------------------------------------
+
+    # Handler marks buttons
+    init_base_filters(
+        send_marks,
+        func=lambda call: call.data == CallBackData.SEMESTER_ONE,
+        callback_query_flag=True,
+        pass_bot=True,
+    )
+    init_base_filters(
+        send_marks,
+        func=lambda call: call.data == CallBackData.SEMESTER_TWO,
+        callback_query_flag=True,
+        pass_bot=True,
+    )
+    init_base_filters(
+        send_marks,
+        func=lambda call: call.data == CallBackData.SEMESTER_THREE,
+        callback_query_flag=True,
+        pass_bot=True,
+    )
+    init_base_filters(
+        send_marks,
+        func=lambda call: call.data == CallBackData.SEMESTER_FOUR,
+        callback_query_flag=True,
+        pass_bot=True,
+    )
+    init_base_filters(
+        send_marks,
+        func=lambda call: call.data == CallBackData.SEMESTER_FIVE,
+        callback_query_flag=True,
+        pass_bot=True,
+    )
+    init_base_filters(
+        send_marks,
+        func=lambda call: call.data == CallBackData.SEMESTER_SIX,
+        callback_query_flag=True,
+        pass_bot=True,
+    )
+    # ------------------------------------------------------------------------------------------------------------------
+
+    init_base_filters(
+        reopen_menu,
+        func=lambda call: call.data == CallBackData.REOPEN_MENU,
+        callback_query_flag=True,
+        pass_bot=True,
+    )
+
+    init_base_filters(
+        view_pd,
+        func=lambda call: call.data == CallBackData.PERSONAL_DATA,
+        callback_query_flag=True,
+        pass_bot=True,
+    )
 
     init_base_filters(
         default_answer,

@@ -6,6 +6,8 @@ from telebot.types import Message, CallbackQuery, InlineKeyboardMarkup
 from config import Roles
 from tgbot.api_worker.client import APIWorker
 from tgbot.commands import CommandSequence
+from tgbot.handlers.self import self
+from tgbot.keybords.base_keyboard import TextButton
 from tgbot.keybords.marks import MarksButtons
 from tgbot.keybords.personal_data import PersonalDataButtons
 from tgbot.keybords.platoon_buttons import PlatoonButtons
@@ -14,7 +16,7 @@ from tgbot.keybords.squad_commander import SquadCommander
 from tgbot.keybords.student import Student
 from tgbot.user import User
 from tgbot.utils.callback_data import CallBackData, CallBackStackWorker
-from tgbot.utils.message_tools import send_wait_smile
+from tgbot.utils.message_tools import send_wait_smile, get_message
 
 _api = APIWorker()
 _callback_stack = CallBackStackWorker()
@@ -23,17 +25,17 @@ _callback_stack = CallBackStackWorker()
 @_callback_stack.listen_call(is_root=True)
 @send_wait_smile
 async def menu_handler(message: Message, bot: AsyncTeleBot):
-    user = await User(message.from_user.id).ainit()
+    user = await User(message.chat.id).ainit()
     role = await user.role
 
     keyboard = None
 
     if role == Roles.student:
-        keyboard = Student().menu()
+        keyboard = Student(reopen_menu_button_on=False, back_button_on=False).menu()
     elif role == Roles.squad_commander:
-        keyboard = SquadCommander().menu()
+        keyboard = SquadCommander(reopen_menu_button_on=False, back_button_on=False).menu()
     elif role == Roles.platoon_commander:
-        keyboard = PlatoonCommander().menu()
+        keyboard = PlatoonCommander(reopen_menu_button_on=False, back_button_on=False).menu()
 
     if keyboard is not None:
         message = await bot.send_message(message.chat.id, f"Главное меню", reply_markup=keyboard)
@@ -45,14 +47,14 @@ async def menu_handler(message: Message, bot: AsyncTeleBot):
 
 @_callback_stack.listen_call()
 async def student_menu(call: CallbackQuery, bot: AsyncTeleBot):
-    keyboard = Student().menu({"Назад": CallBackData.BACK})
+    keyboard = Student().menu()
 
     await send_buttons(call, bot, 'Меню студента', keyboard)
 
 
 @_callback_stack.listen_call()
 async def squad_menu(call: CallbackQuery, bot: AsyncTeleBot):
-    keyboard = SquadCommander().menu({"Назад": CallBackData.BACK})
+    keyboard = SquadCommander().menu()
 
     await send_buttons(call, bot, "Меню командира отделения", keyboard)
 
@@ -73,6 +75,31 @@ async def marks_menu(call: CallbackQuery, bot: AsyncTeleBot):
     await send_buttons(call, bot, "Оценки", keyboard)
 
 
+@send_wait_smile
+async def send_marks(call: CallbackQuery, bot: AsyncTeleBot):
+    callback_map = {
+        CallBackData.SEMESTER_ONE:   1,
+        CallBackData.SEMESTER_TWO:   2,
+        CallBackData.SEMESTER_THREE: 3,
+        CallBackData.SEMESTER_FOUR:  4,
+        CallBackData.SEMESTER_FIVE:  5,
+        CallBackData.SEMESTER_SIX:   6,
+    }
+
+    user = await User(call.message.chat.id).ainit()
+
+    attends = await _api.get_marks_by_semester(user.token, user.user_id, callback_map.get(call.data))
+
+    msg = ""
+
+    for attend in attends:
+        msg += (f"Дата: {attend["mark_date"]}\n"
+                f"Тема: {attend["theme"]}\n"
+                f"Оценка: {attend["mark"]}\n\n")
+
+    await bot.send_message(call.message.chat.id, msg)
+
+
 @_callback_stack.listen_call()
 async def personal_menu(call: CallbackQuery, bot: AsyncTeleBot):
     keyboard = PersonalDataButtons().menu()
@@ -80,7 +107,17 @@ async def personal_menu(call: CallbackQuery, bot: AsyncTeleBot):
     await send_buttons(call, bot, "Персональные данные", keyboard)
 
 
-@_callback_stack.go_root
+async def reopen_menu(call: CallbackQuery, bot: AsyncTeleBot):
+    message = get_message(call)
+
+    await bot.delete_message(message.chat.id, message.message_id)
+    await menu_handler(message, bot)
+
+
+async def view_pd(call: CallbackQuery, bot: AsyncTeleBot):
+    await self(get_message(call), bot)
+
+
 @send_wait_smile
 async def attend_menu(call: CallbackQuery, bot: AsyncTeleBot):
     user = await User(call.message.chat.id).ainit()
@@ -101,11 +138,13 @@ async def attend_menu(call: CallbackQuery, bot: AsyncTeleBot):
         await bot.send_message(call.message.chat.id, "Информация отсутствует.")
 
 
-async def send_buttons(call: CallbackQuery, bot: AsyncTeleBot, text: str, keyboard: InlineKeyboardMarkup):
+async def send_buttons(metadata: Message | CallbackQuery, bot: AsyncTeleBot, text: str, keyboard: InlineKeyboardMarkup):
+    message = get_message(metadata)
+
     await bot.edit_message_text(
         text,
-        call.message.chat.id,
-        call.message.message_id,
+        message.chat.id,
+        message.message_id,
         reply_markup=keyboard,
     )
 
@@ -117,10 +156,12 @@ async def back(call: CallbackQuery, bot: AsyncTeleBot):
     if callback_obj is not None:
         func, (metadata, bot_, _, is_root) = callback_obj.popitem()
 
+        message = get_message(metadata)
+
         if is_root:
             await bot.delete_message(
-                chat_id=chat_id,
-                message_id=_callback_stack.get_root_id(chat_id)
+                chat_id=message.chat.id,
+                message_id=_callback_stack.get_root_id(message.chat.id)
             )
 
         if asyncio.iscoroutinefunction(func):
@@ -130,5 +171,5 @@ async def back(call: CallbackQuery, bot: AsyncTeleBot):
 
     await bot.send_message(
         chat_id,
-        f"Нечего отменять. Стек пуст. Попробуйте: /{CommandSequence.MENU}"
+        f"Нечего отменять. Стек пуст. Попробуйте: /{CommandSequence.MENU}, чтобы вернуться в начало."
     )

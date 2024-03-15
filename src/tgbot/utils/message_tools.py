@@ -4,6 +4,7 @@ from typing import Callable
 
 from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message, CallbackQuery
+from typing_extensions import Awaitable
 
 
 def get_message(metadata: Message | CallbackQuery) -> Message:
@@ -15,7 +16,7 @@ def get_message(metadata: Message | CallbackQuery) -> Message:
         raise TypeError
 
 
-def send_wait_smile(func: Callable):
+def send_wait_smile(func: Callable | Awaitable):
     @wraps(func)
     async def wrapper(
         metadata: Message | CallbackQuery, bot: AsyncTeleBot, *args, **kwargs
