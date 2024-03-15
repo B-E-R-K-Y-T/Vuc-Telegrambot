@@ -11,8 +11,8 @@ async def self(message: Message, bot: AsyncTeleBot):
     api = APIWorker()
     user = await User(message.from_user.id).ainit()
 
-    token = await user.get_jwt()
-    user_id = await api.get_id_from_email(token, await user.get_email())
+    token = user.token
+    user_id = user.user_id
 
     data = await api.get_self(token, user_id)
     format_data = ''.join([f"* {k} = {v}\n" for k, v in data.items()])

@@ -15,7 +15,7 @@ class CheckLogin(SimpleCustomFilter):
     async def check(self, message: Message):
         user = await User(message.from_user.id).ainit()
 
-        if await user.get_jwt() is None:
+        if user.token is None:
             await self.bot.send_message(
                 message.chat.id,
                 f"Вы не вошли в систему.\n\n"

@@ -127,12 +127,12 @@ async def check_status(pred: bool, bot, message):
         await bot.delete_state(message.from_user.id, message.chat.id)
     else:
         await bot.send_message(message.chat.id,
-                               f"Ошибка. Попробуйте ещё раз. Или отмените действие с помощью /{CommandSequence.CANCEL}")
+                               f"Ошибка. Попробуйте ещё раз. "
+                               f"Или отмените действие с помощью /{CommandSequence.CANCEL}")
 
 
 async def set_attr(message: Message, attrs: dict):
     user = await User(message.from_user.id).ainit()
-    user_id = await _api.get_id_from_email(user.token, await user.get_email())
 
-    result: dict = {"id": user_id, "data": attrs}
+    result: dict = {"id": user.user_id, "data": attrs}
     return await _api.set_user_attr(user.token, result)

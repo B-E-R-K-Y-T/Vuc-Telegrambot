@@ -20,7 +20,7 @@ async def login_handler_init(message: Message, bot: AsyncTeleBot):
     usr_id = message.from_user.id
     user = await User(usr_id).ainit()
 
-    jwt = await user.get_jwt()
+    jwt = user.token
 
     if jwt is not None:
         await bot.send_message(message.chat.id, "Вы уже вошли в систему.")
