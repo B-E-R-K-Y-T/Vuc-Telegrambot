@@ -30,6 +30,7 @@ class User:
             role: Optional[str] = None,
             name: Optional[str] = None,
             token: Optional[str] = None,
+            is_child: bool= False,
     ):
         self.db = Database()
         self.api = APIWorker()
@@ -50,6 +51,11 @@ class User:
         self.__name: Optional[str] = name
         self.__token: Optional[str] = token
 
+        self.__selectable_user: Optional["User"] = None
+        self.__count_squad_in_platoon: Optional[int] = None
+        self.__semesters: Optional[int] = None
+        self.__attend: Optional[list[int]] = None
+        self.__is_child: bool = is_child
         self.__subordinates: dict["User.user_id", "User"] = {}
 
     async def async_init(self):
@@ -109,9 +115,13 @@ class User:
                         continue
 
                 user_id = subordinate.pop("id")
-                subordinate["user_id"] = user_id
+                token = await self.token
 
-                user = await UsersFactory().create_user(subordinate)
+                subordinate["user_id"] = user_id
+                subordinate["token"] = token
+                subordinate["is_child"] = True
+
+                user = UsersFactory().create_user(subordinate)
                 await self.add_subordinate_user(user)
 
         return self.__subordinates
@@ -125,6 +135,28 @@ class User:
             date_, jwt, email = user_metadata.decode("utf-8").split(",")
 
             return date_, jwt, email
+
+    @property
+    async def semesters(self):
+        if self.__semesters is None:
+            self.__semesters = await self.api.get_semesters(await self.token, await self.user_id)
+
+        return self.__semesters
+
+    @property
+    async def attend(self):
+        if self.__attend is None:
+            self.__attend = await self.api.get_attend(await self.token, await self.user_id)
+
+        return self.__attend
+
+    @property
+    def selectable_user(self):
+        return self.__selectable_user
+
+    @selectable_user.setter
+    def selectable_user(self, value: "User"):
+        self.__selectable_user = value
 
     @property
     async def platoon_number(self):
@@ -162,6 +194,15 @@ class User:
         return self.__address
 
     @property
+    async def count_squad_in_platoon(self):
+        if self.__count_squad_in_platoon is None:
+            self.__count_squad_in_platoon = await self.api.get_count_squad_in_platoon(
+                await self.token,
+                await self.platoon_number)
+
+        return self.__count_squad_in_platoon
+
+    @property
     async def direction_of_study(self):
         if self.__direction_of_study is None:
             self.__direction_of_study = await self.api.get_user_direction_of_study(
@@ -194,6 +235,9 @@ class User:
 
     @property
     async def token(self) -> str | None:
+        if self.__is_child and self.__token is not None:
+            return self.__token
+
         now = time.time()
         user_metadata = await self.get_user_metadata()
 
@@ -242,7 +286,12 @@ class UsersFactory:
     def __init__(self):
         self.__users: LimitedDict[int, tuple[User, int]] = LimitedDict()
 
-    def refresh_user(self, telegram_id: int):
+    async def get_user(self, metadata: Message | CallbackQuery) -> User:
+        telegram_id: int = get_message(metadata).chat.id
+
+        return await self.get_actual_user(telegram_id)
+
+    async def get_actual_user(self, telegram_id: int):
         now = time.time()
 
         if telegram_id in self.__users:
@@ -252,34 +301,27 @@ class UsersFactory:
                 if now - created_at > app_settings.TIME_LIFE_CACHE_USERS:
                     del self.__users[telegram_id]
 
-    async def get_user(self, metadata: Message | CallbackQuery) -> User:
-        telegram_id: int = get_message(metadata).chat.id
-
         return await self.get_user_by_telegram_id(telegram_id)
 
     async def get_user_by_telegram_id(self, telegram_id: int) -> User:
-        self.refresh_user(telegram_id)
-
         if telegram_id not in self.__users:
             created_at = time.time()
             user = await User(telegram_id=telegram_id).async_init()
 
             self.__users[telegram_id] = user, created_at
 
-        return self.__users[telegram_id][0]
+        user = self.__users[telegram_id][0]
 
-    async def create_user(self, data: dict) -> User:
+        return user
+
+    def create_user(self, data: dict) -> User:
         telegram_id: int = data.get("telegram_id")
+        user = User(**data)
+        created_at = time.time()
 
-        self.refresh_user(telegram_id)
+        self.__users[telegram_id] = user, created_at
 
-        if telegram_id not in self.__users:
-            user = User(**data)
-            created_at = time.time()
-
-            self.__users[telegram_id] = user, created_at
-
-        return await self.get_user_by_telegram_id(telegram_id)
+        return self.__users[telegram_id][0]
 
     async def delete_user(self, telegram_id: int) -> None:
         if telegram_id in self.__users:

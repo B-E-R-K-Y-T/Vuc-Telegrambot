@@ -16,7 +16,7 @@ class _auto_callback_data:
     def __new__(cls, *args, **kwargs):
         cls.state += 1
 
-        return str(cls.state)
+        return f"callback_{cls.state}"
 
 
 class CallBackStackWorker:
@@ -185,7 +185,9 @@ class CallBackStackWorker:
 
 class CallBackData:
     MARK = _auto_callback_data()
+    MARK_VIEW_FROM_COMMADER = _auto_callback_data()
     ATTEND = _auto_callback_data()
+    EDIT_ATTEND = _auto_callback_data()
     EDIT_PERSONAL_DATA = _auto_callback_data()
     PERSONAL_DATA = _auto_callback_data()
 

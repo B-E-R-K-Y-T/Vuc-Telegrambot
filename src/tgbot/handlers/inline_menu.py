@@ -5,6 +5,7 @@ from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message, CallbackQuery, InlineKeyboardMarkup
 
 from config import Roles
+from tgbot.keybords.edit_student import EditStudent
 from tgbot.services.api_worker.client import APIWorker
 from tgbot.services.commands import CommandSequence
 from tgbot.handlers.self import self
@@ -16,7 +17,7 @@ from tgbot.keybords.squad import Squad
 from tgbot.keybords.squad_commander import SquadCommander
 from tgbot.keybords.squads import Squads
 from tgbot.keybords.student import Student
-from tgbot.services.user import UsersFactory
+from tgbot.services.user import UsersFactory, User
 from tgbot.services.utils.callback_data import CallBackData, CallBackStackWorker
 from tgbot.services.utils.message_tools import send_status_task_smile, get_message
 
@@ -48,6 +49,17 @@ async def menu_handler(message: Message, bot: AsyncTeleBot):
 
 
 @_callback_stack.listen_call()
+async def switch_user(call: CallbackQuery, bot: AsyncTeleBot):
+    user = await UsersFactory().get_user(call)
+
+    if call.data.isdigit():
+        user.selectable_user = await UsersFactory().get_user_by_telegram_id(int(call.data))
+
+    keyboard = EditStudent().menu()
+    await send_buttons(call, bot, 'Просмотр студента', keyboard)
+
+
+@_callback_stack.listen_call()
 async def student_menu(call: CallbackQuery, bot: AsyncTeleBot):
     keyboard = Student().menu()
 
@@ -58,7 +70,7 @@ async def student_menu(call: CallbackQuery, bot: AsyncTeleBot):
 async def view_squads_menu(call: CallbackQuery, bot: AsyncTeleBot):
     user = await UsersFactory().get_user(call)
 
-    count_squads = await _api.get_count_squad_in_platoon(await user.token, await user.platoon_number)
+    count_squads = await user.count_squad_in_platoon
     keyboard = Squads(count_squads).menu()
 
     await send_buttons(call, bot, "Меню командира отделения", keyboard)
@@ -88,9 +100,9 @@ async def squad_menu(call: CallbackQuery, bot: AsyncTeleBot, squad_number: Optio
 
     for student in (await user.get_subordinate_users()).values():
         if await student.role == Roles.student:
-            user_id = await student.user_id
+            telegram_id = student.telegram_id
             name = await student.name
-            squads[await student.squad_number].append({name: user_id})
+            squads[await student.squad_number].append({name: telegram_id})
 
     if squad_number is None:
         squad_number: int = await user.squad_number
@@ -114,14 +126,36 @@ async def platoon_menu(call: CallbackQuery, bot: AsyncTeleBot):
 @_callback_stack.listen_call()
 async def marks_menu(call: CallbackQuery, bot: AsyncTeleBot):
     user = await UsersFactory().get_user(call)
-    semesters = await _api.get_semesters(await user.token, await user.user_id)
+    user.selectable_user = None
+
+    await marks_menu_build(call, bot, user)
+
+
+@_callback_stack.listen_call()
+async def marks_menu_from_commander(call: CallbackQuery, bot: AsyncTeleBot):
+    user = await UsersFactory().get_user(call)
+
+    await marks_menu_build(call, bot, user)
+
+
+async def marks_menu_build(call: CallbackQuery, bot: AsyncTeleBot, user: User):
+    semesters = await user.semesters
     keyboard = MarksButtons(semesters).menu()
 
     await send_buttons(call, bot, "Оценки", keyboard)
 
+async def view_marks(call: CallbackQuery, bot: AsyncTeleBot):
+    user = await UsersFactory().get_user(call)
+    token = await user.token
+
+    if user.selectable_user is not None:
+        user = user.selectable_user
+
+    await send_marks(call, bot, user, token)
+
 
 @send_status_task_smile()
-async def send_marks(call: CallbackQuery, bot: AsyncTeleBot):
+async def send_marks(call: CallbackQuery, bot: AsyncTeleBot, user: User, token: str):
     callback_map = {
         CallBackData.SEMESTER_ONE: 1,
         CallBackData.SEMESTER_TWO: 2,
@@ -131,16 +165,14 @@ async def send_marks(call: CallbackQuery, bot: AsyncTeleBot):
         CallBackData.SEMESTER_SIX: 6,
     }
 
-    user = await UsersFactory().get_user(call)
-
-    attends = await _api.get_marks_by_semester(await user.token, await user.user_id, callback_map.get(call.data))
+    marks = await _api.get_marks_by_semester(token, await user.user_id, callback_map.get(call.data))
 
     msg = ""
 
-    for attend in attends:
-        msg += (f"Дата: {attend["mark_date"]}\n"
-                f"Тема: {attend["theme"]}\n"
-                f"Оценка: {attend["mark"]}\n\n")
+    for mark in marks:
+        msg += (f"Дата: {mark["mark_date"]}\n"
+                f"Тема: {mark["theme"]}\n"
+                f"Оценка: {mark["mark"]}\n\n")
 
     await bot.send_message(call.message.chat.id, msg)
 
@@ -167,7 +199,7 @@ async def view_pd(call: CallbackQuery, bot: AsyncTeleBot):
 async def view_attend(call: CallbackQuery, bot: AsyncTeleBot):
     user = await UsersFactory().get_user(call)
 
-    attends = await _api.get_attend(await user.token, await user.user_id)
+    attends = await user.attend
 
     if attends:
         msg = ''

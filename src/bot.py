@@ -4,18 +4,12 @@ from telebot import asyncio_filters
 from telebot.async_telebot import AsyncTeleBot
 from telebot.asyncio_storage import StateMemoryStorage
 
-from tgbot.services.commands import CommandSequence
+from config import app_settings
+from exceptions import VucExceptionHandler
 from tgbot.filters.admin_filter import AdminFilter
 from tgbot.filters.check_login import CheckLogin
 from tgbot.handlers.cancel import cancel_state
 from tgbot.handlers.default_message import default_answer
-from exceptions import VucExceptionHandler
-from tgbot.handlers.login import (
-    login_handler_init,
-    login_handler_email,
-    login_handler_password,
-)
-from tgbot.handlers.logout import logout_handler
 from tgbot.handlers.inline_menu import (
     menu_handler,
     student_menu,
@@ -24,13 +18,20 @@ from tgbot.handlers.inline_menu import (
     marks_menu,
     view_attend,
     personal_menu,
-    send_marks,
     reopen_menu,
     view_pd,
     view_squads_menu,
     view_squad_menu,
     squad_commander_menu,
+    view_marks,
+    marks_menu_from_commander, switch_user,
 )
+from tgbot.handlers.login import (
+    login_handler_init,
+    login_handler_email,
+    login_handler_password,
+)
+from tgbot.handlers.logout import logout_handler
 from tgbot.handlers.outline_menu import handle_outline_output
 from tgbot.handlers.self import self
 from tgbot.handlers.setters_pd import (
@@ -53,11 +54,11 @@ from tgbot.handlers.setters_pd import (
 )
 from tgbot.handlers.start import start_command_handler
 from tgbot.middlewares.antiflood_middleware import AntiFloodMiddleware
-from config import app_settings
+from tgbot.services.commands import CommandSequence
 from tgbot.services.outline_text_buttons import OutlineKeyboardButton
+from tgbot.services.utils.callback_data import CallBackData
 from tgbot.states.login import Login
 from tgbot.states.setter_states import *
-from tgbot.services.utils.callback_data import CallBackData
 
 bot = AsyncTeleBot(
     app_settings.TOKEN,
@@ -130,6 +131,12 @@ def init_handlers():
     init_base_filters(
         marks_menu,
         func=lambda call: call.data == CallBackData.MARK,
+        callback_query_flag=True,
+        pass_bot=True,
+    )
+    init_base_filters(
+        marks_menu_from_commander,
+        func=lambda call: call.data == CallBackData.MARK_VIEW_FROM_COMMADER,
         callback_query_flag=True,
         pass_bot=True,
     )
@@ -233,37 +240,37 @@ def init_handlers():
 
     # Handler marks buttons
     init_base_filters(
-        send_marks,
+        view_marks,
         func=lambda call: call.data == CallBackData.SEMESTER_ONE,
         callback_query_flag=True,
         pass_bot=True,
     )
     init_base_filters(
-        send_marks,
+        view_marks,
         func=lambda call: call.data == CallBackData.SEMESTER_TWO,
         callback_query_flag=True,
         pass_bot=True,
     )
     init_base_filters(
-        send_marks,
+        view_marks,
         func=lambda call: call.data == CallBackData.SEMESTER_THREE,
         callback_query_flag=True,
         pass_bot=True,
     )
     init_base_filters(
-        send_marks,
+        view_marks,
         func=lambda call: call.data == CallBackData.SEMESTER_FOUR,
         callback_query_flag=True,
         pass_bot=True,
     )
     init_base_filters(
-        send_marks,
+        view_marks,
         func=lambda call: call.data == CallBackData.SEMESTER_FIVE,
         callback_query_flag=True,
         pass_bot=True,
     )
     init_base_filters(
-        send_marks,
+        view_marks,
         func=lambda call: call.data == CallBackData.SEMESTER_SIX,
         callback_query_flag=True,
         pass_bot=True,
@@ -280,6 +287,13 @@ def init_handlers():
     init_base_filters(
         view_pd,
         func=lambda call: call.data == CallBackData.PERSONAL_DATA,
+        callback_query_flag=True,
+        pass_bot=True,
+    )
+
+    init_base_filters(
+        switch_user,
+        func=lambda call: True,
         callback_query_flag=True,
         pass_bot=True,
     )

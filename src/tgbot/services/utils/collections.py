@@ -2,7 +2,7 @@ from collections import OrderedDict
 
 
 class LimitedDict(OrderedDict):
-    def __init__(self, *args, max_len: int = 400, **kwargs):
+    def __init__(self, *args, max_len: int = 200, **kwargs):
         super(LimitedDict, self).__init__(*args, **kwargs)
         self.__max_len: int = max_len
 

@@ -41,6 +41,9 @@ class BaseKeyboard:
         self.reopen_menu_button_on = reopen_menu_button_on
         self.back_button_on = back_button_on
 
+    def set_buttons(self, new_buttons: dict) -> None:
+        self.buttons = new_buttons
+
     def build_keyboard(self, buttons: dict, row_width: int = 3) -> InlineKeyboardMarkup:
         keyboard = InlineKeyboardMarkup(row_width=row_width)
 
