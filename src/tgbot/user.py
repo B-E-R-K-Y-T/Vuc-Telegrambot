@@ -1,9 +1,10 @@
 import time
 from datetime import date
-from typing import Optional, Dict, Any
+from typing import Optional, Any
 
 from telebot.types import Message, CallbackQuery
 
+from config import Roles, app_settings
 from tgbot.api_worker.client import APIWorker
 from tgbot.utils.collections import LimitedDict
 from tgbot.utils.database import Database
@@ -28,6 +29,7 @@ class User:
             squad_number: Optional[int] = None,
             role: Optional[str] = None,
             name: Optional[str] = None,
+            token: Optional[str] = None,
     ):
         self.db = Database()
         self.api = APIWorker()
@@ -46,8 +48,8 @@ class User:
         self.__squad_number: Optional[int] = squad_number
         self.__role: Optional[str] = role
         self.__name: Optional[str] = name
+        self.__token: Optional[str] = token
 
-        self.__token: Optional[str] = None
         self.__subordinates: dict["User.user_id", "User"] = {}
 
     async def async_init(self):
@@ -81,7 +83,37 @@ class User:
     def get_subordinate_user(self, user_id) -> Optional["User"]:
         return self.__subordinates.get(user_id)
 
-    def get_subordinate_users(self) -> dict[Any, "User"]:
+    async def get_subordinate_users(self) -> dict[Any, "User"]:
+        if not self.__subordinates:
+            _subordinates: list = []
+
+            if await self.role == Roles.squad_commander:
+                _subordinates = await self.api.get_students_by_squad(
+                    await self.token,
+                    await self.platoon_number,
+                    await self.squad_number
+                )
+            elif await self.role == Roles.platoon_commander:
+                _subordinates = await self.api.get_platoon(
+                    await self.token,
+                    await self.platoon_number
+                )
+
+            for subordinate in _subordinates:
+                if await self.role == Roles.squad_commander:
+                    if subordinate["role"] != Roles.student:
+                        continue
+
+                elif await self.role == Roles.platoon_commander:
+                    if subordinate["role"] not in [Roles.student, Roles.squad_commander]:
+                        continue
+
+                user_id = subordinate.pop("id")
+                subordinate["user_id"] = user_id
+
+                user = await UsersFactory().create_user(subordinate)
+                await self.add_subordinate_user(user)
+
         return self.__subordinates
 
     async def get_user_metadata(self) -> tuple | None:
@@ -97,42 +129,45 @@ class User:
     @property
     async def platoon_number(self):
         if self.__platoon_number is None:
-            self.__platoon_number = await self.api.get_platoon_number(self.__token, self.__user_id)
+            self.__platoon_number = await self.api.get_platoon_number(await self.token, await self.user_id)
 
         return self.__platoon_number
 
     @property
     async def name(self):
         if self.__name is None:
-            self.__name = await self.api.get_user_name(self.__token, self.__user_id)
+            self.__name = await self.api.get_user_name(await self.token, await self.user_id)
 
         return self.__name
 
     @property
     async def squad_number(self):
         if self.__squad_number is None:
-            self.__squad_number = await self.api.get_squad_user(self.__token, self.__user_id)
+            self.__squad_number = await self.api.get_squad_user(await self.token, await self.user_id)
 
         return self.__squad_number
 
     @property
     async def group_study(self):
         if self.__group_study is None:
-            self.__group_study = await self.api.get_user_group_study(self.__token, self.__user_id)
+            self.__group_study = await self.api.get_user_group_study(await self.token, await self.user_id)
 
         return self.__group_study
 
     @property
     async def address(self):
         if self.__address is None:
-            self.__address = await self.api.get_user_address(self.__token, self.__user_id)
+            self.__address = await self.api.get_user_address(await self.token, await self.user_id)
 
         return self.__address
 
     @property
     async def direction_of_study(self):
         if self.__direction_of_study is None:
-            self.__direction_of_study = await self.api.get_user_direction_of_study(self.__token, self.__user_id)
+            self.__direction_of_study = await self.api.get_user_direction_of_study(
+                await self.token,
+                await self.user_id
+            )
 
         return self.__direction_of_study
 
@@ -143,11 +178,9 @@ class User:
     @property
     async def user_id(self):
         if self.__user_id is None:
-            self.__token = await self.token
-
-            if self.__token is not None:
+            if await self.token is not None:
                 self.__user_id: int = await self.api.get_id_from_email(
-                    self.__token, await self.email
+                    await self.token, await self.email
                 )
 
         return self.__user_id
@@ -169,11 +202,14 @@ class User:
 
         date_, jwt, _ = user_metadata
 
-        if now - int(date_) > 3600:
+        if now - int(date_) > app_settings.TIME_LIFE_SESSION:
             await self.db.del_value(key=str(self.telegram_id))
             return None
 
         return jwt
+
+    async def delete_token(self):
+        await self.db.del_value(key=str(self.telegram_id))
 
     @property
     async def email(self) -> str | None:
@@ -204,22 +240,50 @@ class User:
 @singleton
 class UsersFactory:
     def __init__(self):
-        self.__users: LimitedDict = LimitedDict()
+        self.__users: LimitedDict[int, tuple[User, int]] = LimitedDict()
+
+    def refresh_user(self, telegram_id: int):
+        now = time.time()
+
+        if telegram_id in self.__users:
+            user, created_at = self.__users.get(telegram_id)
+
+            if user is not None:
+                if now - created_at > app_settings.TIME_LIFE_CACHE_USERS:
+                    del self.__users[telegram_id]
 
     async def get_user(self, metadata: Message | CallbackQuery) -> User:
         telegram_id: int = get_message(metadata).chat.id
 
+        return await self.get_user_by_telegram_id(telegram_id)
+
+    async def get_user_by_telegram_id(self, telegram_id: int) -> User:
+        self.refresh_user(telegram_id)
+
         if telegram_id not in self.__users:
+            created_at = time.time()
             user = await User(telegram_id=telegram_id).async_init()
-            self.__users[telegram_id] = user
 
-        return self.__users[telegram_id]
+            self.__users[telegram_id] = user, created_at
 
-    def create_user(self, data: dict) -> User:
+        return self.__users[telegram_id][0]
+
+    async def create_user(self, data: dict) -> User:
         telegram_id: int = data.get("telegram_id")
+
+        self.refresh_user(telegram_id)
 
         if telegram_id not in self.__users:
             user = User(**data)
-            self.__users[telegram_id] = user
+            created_at = time.time()
 
-        return self.__users[telegram_id]
+            self.__users[telegram_id] = user, created_at
+
+        return await self.get_user_by_telegram_id(telegram_id)
+
+    async def delete_user(self, telegram_id: int) -> None:
+        if telegram_id in self.__users:
+            user = await self.get_user_by_telegram_id(telegram_id)
+            await user.delete_token()
+
+            del self.__users[telegram_id]

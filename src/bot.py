@@ -21,10 +21,15 @@ from tgbot.handlers.menu import (
     student_menu,
     back,
     platoon_menu,
-    squad_menu,
     marks_menu,
-    attend_menu,
-    personal_menu, send_marks, reopen_menu, view_pd,
+    view_attend,
+    personal_menu,
+    send_marks,
+    reopen_menu,
+    view_pd,
+    view_squads_menu,
+    view_squad_menu,
+    squad_commander_menu,
 )
 from tgbot.handlers.self import self
 from tgbot.handlers.setters_pd import (
@@ -80,8 +85,32 @@ def init_handlers():
         pass_bot=True,
     )
     init_base_filters(
-        squad_menu,
+        squad_commander_menu,
         func=lambda call: call.data == CallBackData.SQUAD_MENU,
+        callback_query_flag=True,
+        pass_bot=True,
+    )
+    init_base_filters(
+        view_squads_menu,
+        func=lambda call: call.data == CallBackData.VIEW_SQUADS_MENU,
+        callback_query_flag=True,
+        pass_bot=True,
+    )
+    init_base_filters(
+        view_squad_menu,
+        func=lambda call: call.data == CallBackData.SQUAD_ONE,
+        callback_query_flag=True,
+        pass_bot=True,
+    )
+    init_base_filters(
+        view_squad_menu,
+        func=lambda call: call.data == CallBackData.SQUAD_TWO,
+        callback_query_flag=True,
+        pass_bot=True,
+    )
+    init_base_filters(
+        view_squad_menu,
+        func=lambda call: call.data == CallBackData.SQUAD_THREE,
         callback_query_flag=True,
         pass_bot=True,
     )
@@ -98,7 +127,7 @@ def init_handlers():
         pass_bot=True,
     )
     init_base_filters(
-        attend_menu,
+        view_attend,
         func=lambda call: call.data == CallBackData.ATTEND,
         callback_query_flag=True,
         pass_bot=True,

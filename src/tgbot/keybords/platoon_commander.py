@@ -9,7 +9,7 @@ class PlatoonCommander(BaseKeyboard):
         super().__init__(
             buttons={
                 "Меню командира взвода": CallBackData.PLATOON_MENU,
-                "Меню командира отделения": CallBackData.SQUAD_MENU,
+                "Меню командира отделения": CallBackData.VIEW_SQUADS_MENU,
                 "Меню студента": CallBackData.STUDENT_MENU,
             },
             *args, **kwargs

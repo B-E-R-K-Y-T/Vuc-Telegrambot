@@ -1,4 +1,5 @@
 import asyncio
+from typing import Optional
 
 from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message, CallbackQuery, InlineKeyboardMarkup
@@ -11,7 +12,9 @@ from tgbot.keybords.marks import MarksButtons
 from tgbot.keybords.personal_data import PersonalDataButtons
 from tgbot.keybords.platoon_buttons import PlatoonButtons
 from tgbot.keybords.platoon_commander import PlatoonCommander
+from tgbot.keybords.squad import Squad
 from tgbot.keybords.squad_commander import SquadCommander
+from tgbot.keybords.squads import Squads
 from tgbot.keybords.student import Student
 from tgbot.user import UsersFactory
 from tgbot.utils.callback_data import CallBackData, CallBackStackWorker
@@ -52,34 +55,51 @@ async def student_menu(call: CallbackQuery, bot: AsyncTeleBot):
 
 
 @_callback_stack.listen_call()
-async def squad_menu(call: CallbackQuery, bot: AsyncTeleBot):
+async def view_squads_menu(call: CallbackQuery, bot: AsyncTeleBot):
+    user = await UsersFactory().get_user(call)
+
+    count_squads = await _api.get_count_squad_in_platoon(await user.token, await user.platoon_number)
+    keyboard = Squads(count_squads).menu()
+
+    await send_buttons(call, bot, "Меню командира отделения", keyboard)
+
+
+@_callback_stack.listen_call()
+async def view_squad_menu(call: CallbackQuery, bot: AsyncTeleBot):
+    squads_buttons_map = {
+        CallBackData.SQUAD_ONE: 1,
+        CallBackData.SQUAD_TWO: 2,
+        CallBackData.SQUAD_THREE: 3
+    }
+
+    await squad_menu(call, bot, squads_buttons_map[call.data])
+
+
+@_callback_stack.listen_call()
+async def squad_commander_menu(call: CallbackQuery, bot: AsyncTeleBot):
+    await squad_menu(call, bot)
+
+
+async def squad_menu(call: CallbackQuery, bot: AsyncTeleBot, squad_number: Optional[int] = None):
     user = await UsersFactory().get_user(call)
 
     buttons = {}
+    squads = {1: [], 2: [], 3: []}
 
-    if not user.get_subordinate_users():
+    for student in (await user.get_subordinate_users()).values():
+        if await student.role == Roles.student:
+            user_id = await student.user_id
+            name = await student.name
+            squads[await student.squad_number].append({name: user_id})
 
-        platoon_number = await user.platoon_number
-        squad_number = await user.squad_number
-        students = await _api.get_students_by_squad(await user.token, platoon_number, squad_number)
+    if squad_number is None:
+        squad_number: int = await user.squad_number
 
-        for student in students:
-            if student["role"] == Roles.student:
-                user_id = student.pop("id")
+    for btn in squads[squad_number]:
+        n, u_id = btn.popitem()
+        buttons[n] = u_id
 
-                buttons[student["name"]] = user_id
-                student["user_id"] = user_id
-
-                await user.add_subordinate_user(UsersFactory().create_user(student))
-    else:
-        for student in user.get_subordinate_users().values():
-            if await student.role == Roles.student:
-                user_id = await student.user_id
-                name = await student.name
-
-                buttons[name] = user_id
-
-    keyboard = SquadCommander().menu(buttons)
+    keyboard = Squad().menu(buttons)
 
     await send_buttons(call, bot, "Меню командира отделения", keyboard)
 
@@ -144,7 +164,7 @@ async def view_pd(call: CallbackQuery, bot: AsyncTeleBot):
 
 
 @send_wait_smile
-async def attend_menu(call: CallbackQuery, bot: AsyncTeleBot):
+async def view_attend(call: CallbackQuery, bot: AsyncTeleBot):
     user = await UsersFactory().get_user(call)
 
     attends = await _api.get_attend(await user.token, await user.user_id)

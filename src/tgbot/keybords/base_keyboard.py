@@ -17,7 +17,11 @@ class BaseKeyboard:
             reopen_menu_button_on: bool = True,
             back_button_on: bool = True
     ):
-        self.buttons: Optional[dict] = buttons
+        if buttons is None:
+            self.buttons: dict = {}
+        else:
+            self.buttons: dict = buttons
+
         self.reopen_menu_button_on = reopen_menu_button_on
         self.back_button_on = back_button_on
 

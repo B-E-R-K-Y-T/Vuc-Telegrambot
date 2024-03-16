@@ -145,6 +145,28 @@ class APIWorker:
         if resp.status == HTTPStatus.OK.value:
             return await resp.json()
 
+    async def get_platoon(self, token: str, platoon_number: int) -> list[dict]:
+        resp = await self.request.get(
+            "/platoons/get_platoon",
+            headers=self.headers,
+            cookies={"bonds": token},
+            params={"platoon_number": platoon_number},
+        )
+
+        if resp.status == HTTPStatus.OK.value:
+            return await resp.json()
+
+    async def get_count_squad_in_platoon(self, token: str, platoon_number: int) -> int:
+        resp = await self.request.get(
+            "/platoons/get_count_squad_in_platoon",
+            headers=self.headers,
+            cookies={"bonds": token},
+            params={"platoon_number": platoon_number},
+        )
+
+        if resp.status == HTTPStatus.OK.value:
+            return await resp.json()
+
     async def get_squad_user(self, token: str, user_id: int) -> int:
         resp = await self.request.get(
             "/users/get_squad_user",

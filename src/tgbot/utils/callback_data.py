@@ -1,11 +1,10 @@
 import asyncio
 from copy import copy
 from functools import wraps
-from pprint import pprint
 from typing import Callable
 
 from telebot.async_telebot import AsyncTeleBot
-from telebot.types import Message, CallbackQuery, Update
+from telebot.types import Message, CallbackQuery
 from typing_extensions import Awaitable
 
 from tgbot.utils.message_tools import get_message
@@ -197,7 +196,12 @@ class CallBackData:
     SEMESTER_FIVE = _auto_callback_data()
     SEMESTER_SIX = _auto_callback_data()
 
+    SQUAD_ONE = _auto_callback_data()
+    SQUAD_TWO = _auto_callback_data()
+    SQUAD_THREE = _auto_callback_data()
+
     STUDENT_MENU = _auto_callback_data()
+    VIEW_SQUADS_MENU = _auto_callback_data()
     SQUAD_MENU = _auto_callback_data()
     PLATOON_MENU = _auto_callback_data()
 

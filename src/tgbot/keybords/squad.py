@@ -4,15 +4,11 @@ from tgbot.keybords.base_keyboard import BaseKeyboard
 from tgbot.utils.callback_data import CallBackData
 
 
-class SquadCommander(BaseKeyboard):
+class Squad(BaseKeyboard):
     def __init__(self, *args, **kwargs):
         super().__init__(
             *args, **kwargs
         )
-        self.buttons = {
-            "Меню командира отделения": CallBackData.SQUAD_MENU,
-            "Меню студента": CallBackData.STUDENT_MENU,
-        }
 
     def menu(self, new_buttons: Optional[dict] = None):
         self.update_buttons(new_buttons)
