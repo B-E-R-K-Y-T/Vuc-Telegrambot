@@ -18,7 +18,7 @@ class AppSettings(BaseSettings):
     TOKEN: str
 
     MAX_MESSAGES: int
-    INTERVAL: int
+    INTERVAL: float
     TIMEOUT_MESSAGES: int
 
     SERVER_HOST: str
