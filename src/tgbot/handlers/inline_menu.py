@@ -144,6 +144,7 @@ async def marks_menu_build(call: CallbackQuery, bot: AsyncTeleBot, user: User):
 
     await send_buttons(call, bot, "Оценки", keyboard)
 
+
 async def view_marks(call: CallbackQuery, bot: AsyncTeleBot):
     user = await UsersFactory().get_user(call)
     token = await user.token
