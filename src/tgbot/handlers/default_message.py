@@ -1,7 +1,7 @@
 from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message
 
-from tgbot.commands import CommandSequence
+from tgbot.services.commands import CommandSequence
 
 
 async def default_answer(message: Message, bot: AsyncTeleBot):

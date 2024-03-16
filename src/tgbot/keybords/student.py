@@ -1,17 +1,17 @@
 from typing import Optional
 
-from tgbot.keybords.base_keyboard import BaseKeyboard
-from tgbot.utils.callback_data import CallBackData
+from tgbot.keybords.base_keyboard import BaseKeyboard, TextButton
+from tgbot.services.utils.callback_data import CallBackData
 
 
 class Student(BaseKeyboard):
     def __init__(self, *args, **kwargs):
         super().__init__(
             buttons={
-                "Оценки": CallBackData.MARK,
-                "Посещаемость": CallBackData.ATTEND,
-                "Персональные данные": CallBackData.PERSONAL_DATA,
-                "Изменить персональные данные": CallBackData.EDIT_PERSONAL_DATA,
+                TextButton.MARKS: CallBackData.MARK,
+                TextButton.ATTEND: CallBackData.ATTEND,
+                TextButton.PERSONAL_DATA: CallBackData.PERSONAL_DATA,
+                TextButton.EDIT_PERSONAL_DATA: CallBackData.EDIT_PERSONAL_DATA,
             },
             *args, **kwargs
         )

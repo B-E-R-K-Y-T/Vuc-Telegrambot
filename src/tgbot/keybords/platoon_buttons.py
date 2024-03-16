@@ -1,15 +1,15 @@
 from typing import Optional
 
 from tgbot.keybords.base_keyboard import BaseKeyboard, TextButton
-from tgbot.utils.callback_data import CallBackData
+from tgbot.services.utils.callback_data import CallBackData
 
 
 class PlatoonButtons(BaseKeyboard):
     def __init__(self, *args, **kwargs):
         super().__init__(
             buttons={
-                "Добавить студента": CallBackData.ADD_STUDENT,
-                "Перемесить студента в др. отделение": CallBackData.MOVE_STUDENT,
+                TextButton.ADD_STUDENT: CallBackData.ADD_STUDENT,
+                TextButton.MOVE_STUDENT: CallBackData.MOVE_STUDENT,
             },
             *args, **kwargs
         )

@@ -1,12 +1,12 @@
 from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message
 
-from tgbot.api_worker.client import APIWorker
-from tgbot.user import UsersFactory
-from tgbot.utils.message_tools import send_wait_smile
+from tgbot.services.api_worker.client import APIWorker
+from tgbot.services.user import UsersFactory
+from tgbot.services.utils.message_tools import send_status_task_smile
 
 
-@send_wait_smile
+@send_status_task_smile()
 async def self(message: Message, bot: AsyncTeleBot):
     api = APIWorker()
     user = await UsersFactory().get_user(message)

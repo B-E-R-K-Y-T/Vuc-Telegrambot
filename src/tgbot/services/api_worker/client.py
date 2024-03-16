@@ -2,7 +2,7 @@ import json
 from copy import copy
 from http import HTTPStatus
 
-from tgbot.api_worker.request import Request
+from tgbot.services.api_worker.request import Request
 
 
 class APIWorker:

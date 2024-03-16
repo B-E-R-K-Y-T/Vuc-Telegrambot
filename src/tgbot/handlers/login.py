@@ -1,15 +1,15 @@
 from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message
 
-from exceptions import ErrorMessage
-from tgbot.handlers.menu import menu_handler
+from exceptions import ErrorMessage, BackgroundTaskError
+from tgbot.handlers.inline_menu import menu_handler
 from tgbot.states.login import Login
-from tgbot.api_worker.client import APIWorker
-from tgbot.user import UsersFactory
-from tgbot.utils.database import Database
-from tgbot.utils.message_tools import send_wait_smile
-from tgbot.validators.validate import check_valid_email
-from tgbot.validators.validator_handler import bind_validator
+from tgbot.services.api_worker.client import APIWorker
+from tgbot.services.user import UsersFactory
+from tgbot.services.utils.database import Database
+from tgbot.services.utils.message_tools import send_status_task_smile
+from tgbot.services.validators.validate import check_valid_email
+from tgbot.services.validators.validator_handler import bind_validator
 
 _users = {}
 _db = Database()
@@ -41,8 +41,10 @@ async def login_handler_email(message: Message, bot: AsyncTeleBot):
     await bot.set_state(message.from_user.id, Login.password, message.chat.id)
 
 
-@send_wait_smile
+@send_status_task_smile()
 async def login_handler_password(message: Message, bot: AsyncTeleBot):
+    from tgbot.handlers.outline_menu import create_authorized_outline_menu_handler
+
     usr_id = message.from_user.id
     user = _users[usr_id]
     user.password = message.text
@@ -53,15 +55,17 @@ async def login_handler_password(message: Message, bot: AsyncTeleBot):
     jwt = await _api.login(await user.email, user.password)
 
     if jwt is None:
-        await bot.send_message(message.chat.id, "Ошибка.")
+        await bot.delete_state(message.from_user.id, message.chat.id)
+        raise BackgroundTaskError
     else:
         await _db.set_value(
             key=str(usr_id), value=[message.date, jwt, await user.email]
         )
 
-        await bot.send_message(message.chat.id, "Успешно.")
-
         await menu_handler(message, bot)
+
+    markup = await create_authorized_outline_menu_handler()
+    await bot.send_message(message.chat.id, "Вы вошли в систему.", reply_markup=markup)
 
     await bot.delete_state(message.from_user.id, message.chat.id)
     del _users[usr_id]

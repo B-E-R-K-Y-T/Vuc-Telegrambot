@@ -1,7 +1,7 @@
 from typing import Optional
 
-from tgbot.keybords.base_keyboard import BaseKeyboard
-from tgbot.utils.callback_data import CallBackData
+from tgbot.keybords.base_keyboard import BaseKeyboard, TextButton
+from tgbot.services.utils.callback_data import CallBackData
 
 
 class SquadCommander(BaseKeyboard):
@@ -10,8 +10,8 @@ class SquadCommander(BaseKeyboard):
             *args, **kwargs
         )
         self.buttons = {
-            "Меню командира отделения": CallBackData.SQUAD_MENU,
-            "Меню студента": CallBackData.STUDENT_MENU,
+            TextButton.SQUADS_MENU: CallBackData.SQUAD_MENU,
+            TextButton.STUDENT_MENU: CallBackData.STUDENT_MENU,
         }
 
     def menu(self, new_buttons: Optional[dict] = None):

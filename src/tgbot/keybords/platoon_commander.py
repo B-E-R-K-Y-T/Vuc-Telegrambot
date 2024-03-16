@@ -1,16 +1,16 @@
 from typing import Optional
 
-from tgbot.keybords.base_keyboard import BaseKeyboard
-from tgbot.utils.callback_data import CallBackData
+from tgbot.keybords.base_keyboard import BaseKeyboard, TextButton
+from tgbot.services.utils.callback_data import CallBackData
 
 
 class PlatoonCommander(BaseKeyboard):
     def __init__(self, *args, **kwargs):
         super().__init__(
             buttons={
-                "Меню командира взвода": CallBackData.PLATOON_MENU,
-                "Меню командира отделения": CallBackData.VIEW_SQUADS_MENU,
-                "Меню студента": CallBackData.STUDENT_MENU,
+                TextButton.PLATOON_MENU: CallBackData.PLATOON_MENU,
+                TextButton.SQUADS_MENU: CallBackData.VIEW_SQUADS_MENU,
+                TextButton.STUDENT_MENU: CallBackData.STUDENT_MENU,
             },
             *args, **kwargs
         )

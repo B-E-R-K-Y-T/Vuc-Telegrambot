@@ -7,7 +7,7 @@ from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message, CallbackQuery
 from typing_extensions import Awaitable
 
-from tgbot.utils.message_tools import get_message
+from tgbot.services.utils.message_tools import get_message
 
 
 class _auto_callback_data:

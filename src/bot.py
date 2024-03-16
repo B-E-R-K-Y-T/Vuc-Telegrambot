@@ -4,7 +4,7 @@ from telebot import asyncio_filters
 from telebot.async_telebot import AsyncTeleBot
 from telebot.asyncio_storage import StateMemoryStorage
 
-from tgbot.commands import CommandSequence
+from tgbot.services.commands import CommandSequence
 from tgbot.filters.admin_filter import AdminFilter
 from tgbot.filters.check_login import CheckLogin
 from tgbot.handlers.cancel import cancel_state
@@ -16,7 +16,7 @@ from tgbot.handlers.login import (
     login_handler_password,
 )
 from tgbot.handlers.logout import logout_handler
-from tgbot.handlers.menu import (
+from tgbot.handlers.inline_menu import (
     menu_handler,
     student_menu,
     back,
@@ -31,6 +31,7 @@ from tgbot.handlers.menu import (
     view_squad_menu,
     squad_commander_menu,
 )
+from tgbot.handlers.outline_menu import handle_outline_output
 from tgbot.handlers.self import self
 from tgbot.handlers.setters_pd import (
     init_email_state,
@@ -53,9 +54,10 @@ from tgbot.handlers.setters_pd import (
 from tgbot.handlers.start import start_command_handler
 from tgbot.middlewares.antiflood_middleware import AntiFloodMiddleware
 from config import app_settings
+from tgbot.services.outline_text_buttons import OutlineKeyboardButton
 from tgbot.states.login import Login
 from tgbot.states.setter_states import *
-from tgbot.utils.callback_data import CallBackData
+from tgbot.services.utils.callback_data import CallBackData
 
 bot = AsyncTeleBot(
     app_settings.TOKEN,
@@ -277,10 +279,14 @@ def init_handlers():
         pass_bot=True,
     )
 
+    bot.register_message_handler(
+        handle_outline_output, func=lambda msg: msg.text in OutlineKeyboardButton.fields(), pass_bot=True
+    )
+
     init_base_filters(
         default_answer,
         pass_bot=True,
-        func=lambda msg: msg.text not in CommandSequence.commands(),
+        func=lambda msg: msg.text not in CommandSequence.fields(),
     )
 
 

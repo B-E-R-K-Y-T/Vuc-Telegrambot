@@ -5,11 +5,11 @@ from typing import Optional, Any
 from telebot.types import Message, CallbackQuery
 
 from config import Roles, app_settings
-from tgbot.api_worker.client import APIWorker
-from tgbot.utils.collections import LimitedDict
-from tgbot.utils.database import Database
-from tgbot.utils.message_tools import get_message
-from tgbot.utils.singleton import singleton
+from tgbot.services.api_worker.client import APIWorker
+from tgbot.services.utils.collections import LimitedDict
+from tgbot.services.utils.database import Database
+from tgbot.services.utils.message_tools import get_message
+from tgbot.services.utils.singleton import singleton
 
 
 class User:

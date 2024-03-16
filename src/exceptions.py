@@ -20,6 +20,13 @@ class EmailError(MainVucException):
     pass
 
 
+class BackgroundTaskError(MainVucException):
+    """
+    Использовать только в сочетании с декоратором @send_status_task_smile()
+    """
+    pass
+
+
 class VucExceptionHandler(ExceptionHandler):
     async def handle(self, exception):
         LOGGER.err(exception)

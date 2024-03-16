@@ -5,8 +5,8 @@ from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message, CallbackQuery, InlineKeyboardMarkup
 
 from config import Roles
-from tgbot.api_worker.client import APIWorker
-from tgbot.commands import CommandSequence
+from tgbot.services.api_worker.client import APIWorker
+from tgbot.services.commands import CommandSequence
 from tgbot.handlers.self import self
 from tgbot.keybords.marks import MarksButtons
 from tgbot.keybords.personal_data import PersonalDataButtons
@@ -16,15 +16,15 @@ from tgbot.keybords.squad import Squad
 from tgbot.keybords.squad_commander import SquadCommander
 from tgbot.keybords.squads import Squads
 from tgbot.keybords.student import Student
-from tgbot.user import UsersFactory
-from tgbot.utils.callback_data import CallBackData, CallBackStackWorker
-from tgbot.utils.message_tools import send_wait_smile, get_message
+from tgbot.services.user import UsersFactory
+from tgbot.services.utils.callback_data import CallBackData, CallBackStackWorker
+from tgbot.services.utils.message_tools import send_status_task_smile, get_message
 
 _api = APIWorker()
 _callback_stack = CallBackStackWorker()
 
 
-@send_wait_smile
+@send_status_task_smile(send_ok_status_smile=False)
 @_callback_stack.listen_call(is_root=True)
 async def menu_handler(message: Message, bot: AsyncTeleBot):
     user = await UsersFactory().get_user(message)
@@ -120,7 +120,7 @@ async def marks_menu(call: CallbackQuery, bot: AsyncTeleBot):
     await send_buttons(call, bot, "Оценки", keyboard)
 
 
-@send_wait_smile
+@send_status_task_smile()
 async def send_marks(call: CallbackQuery, bot: AsyncTeleBot):
     callback_map = {
         CallBackData.SEMESTER_ONE: 1,
@@ -163,7 +163,7 @@ async def view_pd(call: CallbackQuery, bot: AsyncTeleBot):
     await self(get_message(call), bot)
 
 
-@send_wait_smile
+@send_status_task_smile()
 async def view_attend(call: CallbackQuery, bot: AsyncTeleBot):
     user = await UsersFactory().get_user(call)
 

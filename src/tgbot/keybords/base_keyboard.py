@@ -2,12 +2,28 @@ from typing import Optional
 
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-from tgbot.utils.callback_data import CallBackData
+from tgbot.services.utils.callback_data import CallBackData
 
 
 class TextButton:
-    BACK = '⬅️'
-    REOPEN = '🔄'
+    BACK = "⬅️"
+    REOPEN = "🔄"
+    ADD_STUDENT = "➕👨‍🎓Добавить студента"
+    MOVE_STUDENT = "🚚👨‍🎓Переместить студента в др. отделение"
+    PLATOON_MENU = "👮‍♂️📋Меню командира взвода"
+    SQUADS_MENU = "👨‍✈️📋Меню командира отделения"
+    STUDENT_MENU = "🎓📋Меню студента"
+    MARKS = "📝Оценки"
+    ATTEND = "😊Посещаемость"
+    PERSONAL_DATA = "🔒📋Персональные данные"
+    EDIT_PERSONAL_DATA = "🖊️🔐Редактировать персональные данные"
+    NAME = "👤ФИО"
+    DOB = "🎂🎈День рождения"
+    PHONE = "📞📱Номер телефона"
+    ADDRESS = "🏠📍Адрес"
+    INSTITUTE = "🏛️🎓Институт"
+    DOS = "📚🎯Направление обучения"
+    GROUP_STUDY = "👩‍🎓👨‍🎓Группа обучения"
 
 
 class BaseKeyboard:

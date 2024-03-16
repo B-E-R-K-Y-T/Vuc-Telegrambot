@@ -1,3 +1,6 @@
+from tgbot.services.collector_fields import CollectorField
+
+
 class Command(str):
     def __init__(self, text: str):
         super().__init__(text)
@@ -8,16 +11,14 @@ class Command(str):
         return self.__text
 
 
-class Commands:
+class Commands(CollectorField):
+    field_type = Command
+
     @classmethod
-    def commands(cls):
-        res = []
+    def fields(cls):
+        commands = super().fields()
 
-        for name_attr, type_ in cls.__dict__["__annotations__"].items():
-            if type_ is Command:
-                res.append(f"/{cls.__dict__[name_attr]}")
-
-        return res
+        return [f'/{cmd}' for cmd in commands]
 
 
 class CommandSequence(Commands):

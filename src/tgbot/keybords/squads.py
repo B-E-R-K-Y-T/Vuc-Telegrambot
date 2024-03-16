@@ -1,7 +1,7 @@
 from typing import Optional
 
 from tgbot.keybords.base_keyboard import BaseKeyboard
-from tgbot.utils.callback_data import CallBackData
+from tgbot.services.utils.callback_data import CallBackData
 
 
 class Squads(BaseKeyboard):

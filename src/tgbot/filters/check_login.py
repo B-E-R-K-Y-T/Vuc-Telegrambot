@@ -2,8 +2,8 @@ from telebot.asyncio_filters import SimpleCustomFilter
 from telebot.types import Message
 from telebot.async_telebot import AsyncTeleBot
 
-from tgbot.user import UsersFactory
-from tgbot.commands import CommandSequence
+from tgbot.services.user import UsersFactory
+from tgbot.services.commands import CommandSequence
 
 
 class CheckLogin(SimpleCustomFilter):
