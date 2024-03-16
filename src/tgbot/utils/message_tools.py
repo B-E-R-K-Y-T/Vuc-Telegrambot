@@ -19,19 +19,22 @@ def get_message(metadata: Message | CallbackQuery) -> Message:
 def send_wait_smile(func: Callable | Awaitable):
     @wraps(func)
     async def wrapper(
-        metadata: Message | CallbackQuery, bot: AsyncTeleBot, *args, **kwargs
+            metadata: Message | CallbackQuery, bot: AsyncTeleBot, *args, **kwargs
     ):
         message = get_message(metadata)
 
         msg_id: Message = await bot.send_message(message.chat.id, "⏳")
 
-        if asyncio.iscoroutinefunction(func):
-            res = await func(metadata, bot, *args, **kwargs)
+        try:
+            if asyncio.iscoroutinefunction(func):
+                res = await func(metadata, bot, *args, **kwargs)
+            else:
+                res = func(metadata, bot, *args, **kwargs)
+        except Exception as _:
+            await bot.send_message(message.chat.id, "❌")
         else:
-            res = func(metadata, bot, *args, **kwargs)
-
-        await bot.delete_message(message.chat.id, msg_id.message_id)
-
-        return res
+            return res
+        finally:
+            await bot.delete_message(message.chat.id, msg_id.message_id)
 
     return wrapper
