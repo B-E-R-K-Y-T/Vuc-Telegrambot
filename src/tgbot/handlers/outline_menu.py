@@ -1,6 +1,7 @@
 from telebot.async_telebot import AsyncTeleBot
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, Message
 
+from tgbot.handlers.cancel import cancel_state
 from tgbot.handlers.inline_menu import menu_handler
 from tgbot.handlers.login import login_handler_init
 from tgbot.handlers.logout import logout_handler
@@ -11,12 +12,13 @@ from tgbot.services.user import UsersFactory
 
 
 async def create_start_outline_menu_handler() -> ReplyKeyboardMarkup:
-    markup = ReplyKeyboardMarkup(row_width=1, one_time_keyboard=True, resize_keyboard=True)
+    markup = ReplyKeyboardMarkup(row_width=3, one_time_keyboard=True, resize_keyboard=True)
 
     buttons = (
         KeyboardButton(OutlineKeyboardButton.REGISTRATION),
         KeyboardButton(OutlineKeyboardButton.LOGIN),
         KeyboardButton(OutlineKeyboardButton.QUESTIONS),
+        KeyboardButton(OutlineKeyboardButton.CANCEL),
     )
 
     markup.add(*buttons)
@@ -25,12 +27,13 @@ async def create_start_outline_menu_handler() -> ReplyKeyboardMarkup:
 
 
 async def create_authorized_outline_menu_handler() -> ReplyKeyboardMarkup:
-    markup = ReplyKeyboardMarkup(row_width=1, one_time_keyboard=True, resize_keyboard=True)
+    markup = ReplyKeyboardMarkup(row_width=3, one_time_keyboard=True, resize_keyboard=True)
 
     buttons = (
         KeyboardButton(OutlineKeyboardButton.LOGOUT),
         KeyboardButton(OutlineKeyboardButton.MENU),
         KeyboardButton(OutlineKeyboardButton.QUESTIONS),
+        KeyboardButton(OutlineKeyboardButton.CANCEL),
     )
 
     markup.add(*buttons)
@@ -73,6 +76,8 @@ async def handle_outline_output(message: Message, bot: AsyncTeleBot):
     elif text == OutlineKeyboardButton.MENU:
         if await check_login(message):
             await menu_handler(message, bot)
+        else:
+            await bot.send_message(chat_id, "Ошибка.")
 
     elif text == OutlineKeyboardButton.QUESTIONS:
         markup = await create_outline_menu_questions_handler()
@@ -97,6 +102,8 @@ async def handle_outline_output(message: Message, bot: AsyncTeleBot):
     elif text == OutlineKeyboardButton.INFO:
         await run_scenario(message, bot, MessageScenarios.INFO)
 
+    elif text == OutlineKeyboardButton.CANCEL:
+        await cancel_state(message, bot)
     elif text == OutlineKeyboardButton.BACK:
         if not await check_login(message):
             await bot.send_message(chat_id, "Принято!", reply_markup=await create_start_outline_menu_handler())

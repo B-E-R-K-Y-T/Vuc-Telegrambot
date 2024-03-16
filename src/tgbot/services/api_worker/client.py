@@ -95,10 +95,6 @@ class APIWorker:
         )
 
         if resp.status == HTTPStatus.OK.value:
-            result = await resp.json()
-
-            result["id"]
-
             return await resp.json()
 
     async def get_semesters(self, token: str, user_id: int) -> list[int]:

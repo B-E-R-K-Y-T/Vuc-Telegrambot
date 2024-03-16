@@ -24,4 +24,5 @@ class OutlineKeyboardButton(OutlineKeyboardButtons):
     CONTACTS: OutlineKeyboardCommand = "Контакты"
     ENTRANCE: OutlineKeyboardCommand = "Алгоритм поступления"
 
+    CANCEL: OutlineKeyboardCommand = "Отмена"
     BACK: OutlineKeyboardCommand = "Назад"

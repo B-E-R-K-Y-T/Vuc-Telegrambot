@@ -76,6 +76,11 @@ def init_handlers():
     bot.register_message_handler(
         start_command_handler, commands=[CommandSequence.START], pass_bot=True
     )
+
+    bot.register_message_handler(
+        handle_outline_output, func=lambda msg: msg.text in OutlineKeyboardButton.fields(), pass_bot=True
+    )
+
     init_base_filters(self, commands=[CommandSequence.SELF], pass_bot=True)
     init_base_filters(logout_handler, commands=[CommandSequence.LOGOUT], pass_bot=True)
     init_base_filters(menu_handler, commands=[CommandSequence.MENU], pass_bot=True)
@@ -277,10 +282,6 @@ def init_handlers():
         func=lambda call: call.data == CallBackData.PERSONAL_DATA,
         callback_query_flag=True,
         pass_bot=True,
-    )
-
-    bot.register_message_handler(
-        handle_outline_output, func=lambda msg: msg.text in OutlineKeyboardButton.fields(), pass_bot=True
     )
 
     init_base_filters(
