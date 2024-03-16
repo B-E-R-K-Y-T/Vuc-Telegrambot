@@ -16,7 +16,7 @@ class OutlineKeyboardButton(OutlineKeyboardButtons):
     LOGOUT: OutlineKeyboardCommand = "Выйти 🚪"
 
     MENU: OutlineKeyboardCommand = "Меню 📋"
-    QUESTIONS: OutlineKeyboardCommand = "ЧАВО ❓"
+    QUESTIONS: OutlineKeyboardCommand = "FAQ ❓"
 
     INFO: OutlineKeyboardCommand = "О ВУЦ ℹ️"
     INCOMING: OutlineKeyboardCommand = "Поступающим 🎓"
