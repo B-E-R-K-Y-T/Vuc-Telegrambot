@@ -1,7 +1,6 @@
 from telebot.async_telebot import AsyncTeleBot
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, Message
 
-from exceptions import BackgroundTaskError
 from tgbot.handlers.inline_menu import menu_handler
 from tgbot.handlers.login import login_handler_init
 from tgbot.handlers.logout import logout_handler
@@ -9,7 +8,6 @@ from tgbot.services.message_scenarios.scenarios_handler import run_scenario
 from tgbot.services.message_scenarios.scenarios import MessageScenarios
 from tgbot.services.outline_text_buttons import OutlineKeyboardButton
 from tgbot.services.user import UsersFactory
-from tgbot.services.utils.message_tools import send_status_task_smile
 
 
 async def create_start_outline_menu_handler() -> ReplyKeyboardMarkup:
