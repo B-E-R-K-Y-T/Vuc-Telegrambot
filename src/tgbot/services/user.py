@@ -30,7 +30,7 @@ class User:
             role: Optional[str] = None,
             name: Optional[str] = None,
             token: Optional[str] = None,
-            is_child: bool= False,
+            is_child: bool = False,
     ):
         self.db = Database()
         self.api = APIWorker()
