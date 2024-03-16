@@ -6,6 +6,8 @@ from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message, CallbackQuery
 from typing_extensions import Awaitable
 
+from logger import LOGGER
+
 
 def get_message(metadata: Message | CallbackQuery) -> Message:
     if isinstance(metadata, Message):
@@ -25,8 +27,7 @@ def send_status_task_smile(*, send_ok_status_smile: bool = True, lifetime_smile:
         async def wrapper(
                 metadata: Message | CallbackQuery, bot: AsyncTeleBot, *args, **kwargs
         ):
-            message = get_message(metadata)
-
+            message: Message = get_message(metadata)
             msg_process: Message = await bot.send_message(message.chat.id, "⏳")
 
             try:
@@ -34,7 +35,9 @@ def send_status_task_smile(*, send_ok_status_smile: bool = True, lifetime_smile:
                     res = await func(metadata, bot, *args, **kwargs)
                 else:
                     res = func(metadata, bot, *args, **kwargs)
-            except Exception as _:
+            except Exception as e:
+                LOGGER.err(e)
+
                 await bot.edit_message_text("❌", message.chat.id, msg_process.message_id)
             else:
                 if send_ok_status_smile:
