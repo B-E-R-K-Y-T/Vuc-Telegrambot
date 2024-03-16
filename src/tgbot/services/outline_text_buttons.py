@@ -10,19 +10,19 @@ class OutlineKeyboardButtons(CollectorField):
 
 
 class OutlineKeyboardButton(OutlineKeyboardButtons):
-    REGISTRATION: OutlineKeyboardCommand = "Регистрация"
+    REGISTRATION: OutlineKeyboardCommand = "Регистрация 📝"
 
-    LOGIN: OutlineKeyboardCommand = "Войти"
-    LOGOUT: OutlineKeyboardCommand = "Выйти"
+    LOGIN: OutlineKeyboardCommand = "Войти 🔑"
+    LOGOUT: OutlineKeyboardCommand = "Выйти 🚪"
 
-    MENU: OutlineKeyboardCommand = "Меню"
-    QUESTIONS: OutlineKeyboardCommand = "ЧАВО"
+    MENU: OutlineKeyboardCommand = "Меню 📋"
+    QUESTIONS: OutlineKeyboardCommand = "ЧАВО ❓"
 
-    INFO: OutlineKeyboardCommand = "О ВУЦ"
-    INCOMING: OutlineKeyboardCommand = "Поступающим"
-    SCHEDULE: OutlineKeyboardCommand = "Расписание"
-    CONTACTS: OutlineKeyboardCommand = "Контакты"
-    ENTRANCE: OutlineKeyboardCommand = "Алгоритм поступления"
+    INFO: OutlineKeyboardCommand = "О ВУЦ ℹ️"
+    INCOMING: OutlineKeyboardCommand = "Поступающим 🎓"
+    SCHEDULE: OutlineKeyboardCommand = "Расписание 📅"
+    CONTACTS: OutlineKeyboardCommand = "Контакты 📞"
+    ENTRANCE: OutlineKeyboardCommand = "Алгоритм поступления 🧩"
 
-    CANCEL: OutlineKeyboardCommand = "Отмена"
-    BACK: OutlineKeyboardCommand = "Назад"
+    CANCEL: OutlineKeyboardCommand = "Отмена ❌"
+    BACK: OutlineKeyboardCommand = "Назад 🔙"
