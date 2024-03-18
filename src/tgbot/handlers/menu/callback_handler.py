@@ -19,8 +19,7 @@ async def callback_handler(call: CallbackQuery, bot: AsyncTeleBot):
 
     if call.data == CallBackData.BACK:
         try:
-            print(strider)
-            await strider.back(message.chat.id)
+            await strider.back(message.chat.id, message.message_id)
         except StackRoot as _:
             await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
         except FunctionStackEmpty as _:

@@ -26,7 +26,7 @@ function_stack = CallFunctionStack()
 collector = CallbackCollector(function_stack)
 
 
-@send_status_task_smile(send_ok_status_smile=False)
+# @send_status_task_smile(send_ok_status_smile=False)
 async def menu_handler(message: Message, bot: AsyncTeleBot):
     user = await UsersFactory().get_user(message)
     role = await user.role
@@ -59,7 +59,7 @@ async def squad_commander_start_menu(message: Message, bot: AsyncTeleBot):
 async def platoon_commander_start_menu(message: Message, bot: AsyncTeleBot):
     keyboard = PlatoonCommander(reopen_menu_button_on=False, back_button_on=False).menu()
 
-    await bot.send_message(message.chat.id, f"Главное меню", reply_markup=keyboard)
+    return await bot.send_message(message.chat.id, f"Главное меню", reply_markup=keyboard)
 
 
 @collector.listen_call

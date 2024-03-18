@@ -14,15 +14,18 @@ class CallFunctionStack:
     def __init__(self):
         self.__stack = {}
 
-    def get_last_call(self, chat_id: int):
+    def get_last_call(self, chat_id: int, message_id: int) -> Optional[tuple]:
         if chat_id not in self.__stack:
             return None
 
-        if len(self.__stack[chat_id]) == 1:
+        if message_id not in self.__stack[chat_id]:
             return None
 
-        function_image = copy(self.__stack[chat_id][-2])
-        self.__stack[chat_id].pop(-1)
+        if len(self.__stack[chat_id][message_id]) == 1:
+            return None
+
+        function_image = copy(self.__stack[chat_id][message_id][-2])
+        self.__stack[chat_id][message_id].pop(-1)
 
         return function_image
 
@@ -36,21 +39,31 @@ class CallFunctionStack:
     ):
         message: Message = get_message(metadata)
         chat_id: int = message.chat.id
+        message_id = message.message_id
 
         if chat_id not in self.__stack:
-            self.__stack[chat_id]: dict = []
+            self.__stack[chat_id]: dict = {}
+
+        if message_id not in self.__stack[chat_id]:
+            self.__stack[chat_id][message_id]: list = []
 
         if not args and not kwargs:
-            self.__stack[chat_id].append((func, metadata, bot))
+            self.__stack[chat_id][message_id].append((func, metadata, bot))
         elif not args:
-            self.__stack[chat_id].append((func, metadata, bot, kwargs))
+            self.__stack[chat_id][message_id].append((func, metadata, bot, kwargs))
         elif not kwargs:
-            self.__stack[chat_id].append((func, metadata, bot, args))
+            self.__stack[chat_id][message_id].append((func, metadata, bot, args))
         else:
-            self.__stack[chat_id].append((func, metadata, bot, args, kwargs))
+            self.__stack[chat_id][message_id].append((func, metadata, bot, args, kwargs))
 
-    def clear(self):
-        self.__stack.clear()
+    def clear(self, chat_id: int, message_id: int):
+        if chat_id not in self.__stack:
+            return None
+
+        if message_id not in self.__stack[chat_id]:
+            return None
+
+        self.__stack[chat_id][message_id].clear()
 
     def get_stack(self):
         return self.__stack.copy()
@@ -64,10 +77,13 @@ class CallbackCollector:
         [Message | CallbackQuery, AsyncTeleBot, tuple[Any, ...], dict[str, Any]], Coroutine[Any, Any, Any]]:
         @wraps(func)
         async def wrapper(metadata: Message | CallbackQuery, bot: AsyncTeleBot, *args, **kwargs):
-            self.__stack.clear()
-            self.__stack.add(func, metadata, bot, args, kwargs)
+            message: Message = get_message(metadata)
 
-            return await sync_async_call(func, metadata, bot, *args, **kwargs)
+            self.__stack.clear(message.chat.id, message.message_id)
+
+            result_metadata = await sync_async_call(func, metadata, bot, *args, **kwargs)
+
+            self.__stack.add(func, result_metadata, bot, args, kwargs)
 
         return wrapper
 
@@ -87,9 +103,8 @@ class StackStrider:
         self.__stack = stack
         self.__collector = collector
 
-    async def back(self, chat_id: int):
-        print(self.__stack.get_stack())
-        function_image: Optional[tuple] = self.__stack.get_last_call(chat_id)
+    async def back(self, chat_id: int, message_id: int):
+        function_image: Optional[tuple] = self.__stack.get_last_call(chat_id, message_id)
 
         if function_image is not None:
             func = function_image[0]
@@ -98,7 +113,21 @@ class StackStrider:
         if function_image is None:
             raise FunctionStackEmpty
 
-        await sync_async_call(*function_image)
+        result_metadata = await sync_async_call(*function_image)
 
-        if len(self.__stack.get_stack()[chat_id]) == 1:
+        if len(self.__stack.get_stack()[chat_id][message_id]) == 1:
+            func, _, bot, args, kwargs = self.unpack_func_image(function_image)
+            self.__stack.add(func, result_metadata, bot, args, kwargs)
+
             raise StackRoot
+
+    @staticmethod
+    def unpack_func_image(function_image: tuple) -> tuple:
+        if len(function_image) == 3:
+            return *function_image, (), {}
+        elif len(function_image) == 4 and isinstance(function_image[3], tuple):
+            return *function_image, {}
+        elif len(function_image) == 4 and isinstance(function_image[3], dict):
+            return *function_image, ()
+        elif len(function_image) == 5:
+            return function_image
