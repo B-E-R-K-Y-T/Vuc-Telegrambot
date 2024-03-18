@@ -14,7 +14,7 @@ class CallFunctionStack:
     def __init__(self):
         self.__stack = {}
 
-    def get_last_call(self, chat_id: int, message_id: int) -> Optional[tuple]:
+    def get_last_function_image(self, chat_id: int, message_id: int) -> Optional[tuple]:
         if chat_id not in self.__stack:
             return None
 
@@ -104,10 +104,10 @@ class StackStrider:
         self.__collector = collector
 
     async def back(self, chat_id: int, message_id: int):
-        function_image: Optional[tuple] = self.__stack.get_last_call(chat_id, message_id)
+        function_image: Optional[tuple] = self.__stack.get_last_function_image(chat_id, message_id)
 
         if function_image is not None:
-            func = function_image[0]
+            func, _, _, _, _ = self.unpack_func_image(function_image)
             self.__collector.listen_call(func)
 
         if function_image is None:
@@ -126,8 +126,8 @@ class StackStrider:
         if len(function_image) == 3:
             return *function_image, (), {}
         elif len(function_image) == 4 and isinstance(function_image[3], tuple):
-            return *function_image, {}
-        elif len(function_image) == 4 and isinstance(function_image[3], dict):
             return *function_image, ()
+        elif len(function_image) == 4 and isinstance(function_image[3], dict):
+            return *function_image, {}
         elif len(function_image) == 5:
             return function_image
