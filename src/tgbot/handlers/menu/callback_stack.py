@@ -64,6 +64,7 @@ class CallFunctionStack:
             return None
 
         self.__stack[chat_id][message_id].clear()
+        del self.__stack[chat_id][message_id]
 
     def get_stack(self):
         return self.__stack
@@ -104,6 +105,7 @@ class StackStrider:
         self.__collector = collector
 
     async def back(self, chat_id: int, message_id: int):
+        print(self.__stack.get_stack())
         function_image: Optional[tuple] = self.__stack.get_last_function_image(chat_id, message_id)
 
         if function_image is not None:
@@ -117,6 +119,7 @@ class StackStrider:
 
         if len(self.__stack.get_stack()[chat_id][message_id]) == 1:
             func, _, bot, args, kwargs = self.unpack_func_image(function_image)
+            self.__stack.clear_message_stack(chat_id, message_id)
             self.__stack.add(func, result_metadata, bot, args, kwargs)
 
             raise StackRoot

@@ -3,7 +3,7 @@ from telebot.types import CallbackQuery, Message
 
 from exceptions import FunctionStackEmpty, StackRoot
 from tgbot.handlers.menu.callback_stack import StackStrider
-from tgbot.handlers.menu.inline_menu import self_menu, function_stack, collector
+from tgbot.handlers.menu.inline_menu import self_menu, function_stack, collector, send_marks
 from tgbot.services.api_worker.client import APIWorker
 from tgbot.services.commands import CommandSequence
 from tgbot.services.user import User, UsersFactory
@@ -28,3 +28,5 @@ async def callback_handler(call: CallbackQuery, bot: AsyncTeleBot):
                 f"История пуста. Попробуйте открыть меню ещё раз: /{CommandSequence.MENU}")
     elif call.data == CallBackData.STUDENT_MENU:
         await self_menu(message, bot)
+    elif call.data == CallBackData.MARK:
+        await send_marks(message, bot, user)

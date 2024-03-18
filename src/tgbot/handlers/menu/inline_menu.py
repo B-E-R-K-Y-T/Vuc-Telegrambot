@@ -26,7 +26,7 @@ function_stack = CallFunctionStack()
 collector = CallbackCollector(function_stack)
 
 
-# @send_status_task_smile(send_ok_status_smile=False)
+@send_status_task_smile(send_ok_status_smile=False)
 async def menu_handler(message: Message, bot: AsyncTeleBot):
     user = await UsersFactory().get_user(message)
     role = await user.role
@@ -69,9 +69,11 @@ async def self_menu(message: Message, bot: AsyncTeleBot):
     await edit_menu(message, bot, f"Меню студента", keyboard=keyboard)
 
 
-@send_status_task_smile()
-async def send_marks(message: Message, bot: AsyncTeleBot, api: APIWorker):
-    pass
+@collector.listen_call
+async def send_marks(message: Message, bot: AsyncTeleBot, user: User):
+    keyboard = MarksButtons(await user.semesters).menu()
+
+    await edit_menu(message, bot, "Семестры", keyboard=keyboard)
 
 
 async def edit_menu(message: Message, bot: AsyncTeleBot, text: str, keyboard: InlineKeyboardMarkup):
