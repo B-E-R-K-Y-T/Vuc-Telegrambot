@@ -108,7 +108,7 @@ class APIWorker:
         if resp.status == HTTPStatus.OK.value:
             return [int(sem) for sem in (await resp.json())["semesters"]]
 
-    async def get_attend(self, token: str, user_id: int) -> list[int]:
+    async def get_attend(self, token: str, user_id: int) -> dict:
         resp = await self.request.get(
             "/users/get_attendance_status_user",
             headers=self.headers,
@@ -119,7 +119,7 @@ class APIWorker:
         if resp.status == HTTPStatus.OK.value:
             return await resp.json()
 
-    async def get_marks_by_semester(self, token: str, user_id: int, semester: int) -> list[int]:
+    async def get_marks_by_semester(self, token: str, user_id: int, semester: int) -> dict:
         resp = await self.request.get(
             "/users/get_marks_by_semester",
             headers=self.headers,
@@ -128,9 +128,9 @@ class APIWorker:
         )
 
         if resp.status == HTTPStatus.OK.value:
-            return await resp.json()
+            return dict(await resp.json())
 
-    async def get_students_by_squad(self, token: str, platoon_number: int, squad_number: int) -> list[dict]:
+    async def get_students_by_squad(self, token: str, platoon_number: int, squad_number: int) -> dict:
         resp = await self.request.get(
             "/squad/get_students_by_squad",
             headers=self.headers,
@@ -141,7 +141,7 @@ class APIWorker:
         if resp.status == HTTPStatus.OK.value:
             return await resp.json()
 
-    async def get_platoon(self, token: str, platoon_number: int) -> list[dict]:
+    async def get_platoon(self, token: str, platoon_number: int) -> dict:
         resp = await self.request.get(
             "/platoons/get_platoon",
             headers=self.headers,

@@ -57,6 +57,7 @@ class User:
         self.__attend: Optional[list[int]] = None
         self.__is_child: bool = is_child
         self.__subordinates: dict["User.user_id", "User"] = {}
+        self.__marks: dict = {}
 
     async def async_init(self):
         self.__token = await self.token
@@ -90,7 +91,7 @@ class User:
 
     async def get_subordinate_users(self) -> dict[Any, "User"]:
         if not self.__subordinates:
-            _subordinates: list = []
+            _subordinates: dict = {}
 
             if await self.role == Roles.squad_commander:
                 _subordinates = await self.api.get_students_by_squad(
@@ -104,7 +105,7 @@ class User:
                     await self.platoon_number
                 )
 
-            for subordinate in _subordinates:
+            for subordinate in _subordinates.values():
                 if await self.role == Roles.squad_commander:
                     if subordinate["role"] != Roles.student:
                         continue
@@ -135,6 +136,18 @@ class User:
 
             return date_, jwt, email
 
+    async def get_marks(self, semester: int) -> list[dict]:
+        if semester not in self.__marks:
+            marks = await self.api.get_marks_by_semester(await self.token, await self.user_id, semester)
+            res = []
+
+            for mark in marks.values():
+                res.append(mark)
+
+            self.__marks[semester] = res
+
+        return self.__marks[semester]
+
     @property
     async def semesters(self):
         if self.__semesters is None:
@@ -146,6 +159,12 @@ class User:
     async def attend(self):
         if self.__attend is None:
             self.__attend = await self.api.get_attend(await self.token, await self.user_id)
+            temp_res = []
+
+            for at in self.__attend.values():
+                temp_res.append(at)
+
+            self.__attend = temp_res
 
         return self.__attend
 

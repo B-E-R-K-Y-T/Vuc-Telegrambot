@@ -2,7 +2,7 @@ from typing import Optional
 
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-from tgbot.services.utils.callback_data import CallBackData
+from tgbot.services.callback_worker.callback_data import CallBackData
 
 
 class TextButton:

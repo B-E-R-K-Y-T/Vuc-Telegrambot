@@ -15,19 +15,28 @@ from tgbot.handlers.login import (
     login_handler_email,
     login_handler_password,
 )
+from tgbot.handlers.setters_pd import (
+    set_dos,
+    set_phone,
+    set_address,
+    set_institute,
+    set_dob,
+    set_group_study,
+    set_name,
+    set_email,
+)
 from tgbot.handlers.logout import logout_handler
-from tgbot.handlers.menu.callback_handler import callback_handler
+from tgbot.services.callback_worker.callback_handler import callback_handler
 from tgbot.handlers.menu.inline_menu import menu_handler
 from tgbot.handlers.menu.outline_menu import handle_outline_output
-from tgbot.handlers.self import self
-from tgbot.handlers.set_attend import set_attend
+from tgbot.handlers.self import personal_info
 from tgbot.handlers.start import start_command_handler
 from tgbot.middlewares.antiflood_middleware import AntiFloodMiddleware
 from tgbot.services.commands import CommandSequence
 from tgbot.services.outline_text_buttons import OutlineKeyboardButton
-from tgbot.services.utils.callback_data import CallBackData
 from tgbot.states.login import Login
-from tgbot.states.setter_states import *
+from tgbot.states.setter_states import SetName, SetDob, SetGroupStudy, SetPhone, SetAddress, SetEmail, SetDos, \
+    SetInstitute
 
 bot = AsyncTeleBot(
     app_settings.TOKEN,
@@ -51,7 +60,7 @@ def init_handlers():
         handle_outline_output, func=lambda msg: msg.text in OutlineKeyboardButton.fields(), pass_bot=True
     )
 
-    init_base_filters(self, commands=[CommandSequence.SELF], pass_bot=True)
+    init_base_filters(personal_info, commands=[CommandSequence.SELF], pass_bot=True)
     init_base_filters(logout_handler, commands=[CommandSequence.LOGOUT], pass_bot=True)
     init_base_filters(menu_handler, commands=[CommandSequence.MENU], pass_bot=True)
 
@@ -61,6 +70,17 @@ def init_handlers():
         callback_query_flag=True,
         pass_bot=True,
     )
+
+    # Сеттеры персональных данных
+    init_base_filters(set_name, pass_bot=True, state=SetName.init)
+    init_base_filters(set_dob, pass_bot=True, state=SetDob.init)
+    init_base_filters(set_group_study, pass_bot=True, state=SetGroupStudy.init)
+    init_base_filters(set_phone, pass_bot=True, state=SetPhone.init)
+    init_base_filters(set_address, pass_bot=True, state=SetAddress.init)
+    init_base_filters(set_email, pass_bot=True, state=SetEmail.init)
+    init_base_filters(set_dos, pass_bot=True, state=SetDos.init)
+    init_base_filters(set_institute, pass_bot=True, state=SetInstitute.init)
+    # ------------------------------------------------------------------------------------------------------------------
 
     bot.register_message_handler(
         cancel_state, commands=[CommandSequence.CANCEL], pass_bot=True

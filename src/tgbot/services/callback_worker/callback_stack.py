@@ -70,7 +70,7 @@ class CallFunctionStack:
         return self.__stack
 
 
-class CallbackCollector:
+class CallbackStackBuilder:
     def __init__(self, stack: CallFunctionStack):
         self.__stack = stack
 
@@ -100,12 +100,11 @@ class CallbackCollector:
 
 
 class StackStrider:
-    def __init__(self, stack: CallFunctionStack, collector: CallbackCollector):
+    def __init__(self, stack: CallFunctionStack, collector: CallbackStackBuilder):
         self.__stack = stack
         self.__collector = collector
 
     async def back(self, chat_id: int, message_id: int):
-        print(self.__stack.get_stack())
         function_image: Optional[tuple] = self.__stack.get_last_function_image(chat_id, message_id)
 
         if function_image is not None:
@@ -115,7 +114,8 @@ class StackStrider:
         if function_image is None:
             raise FunctionStackEmpty
 
-        result_metadata = await sync_async_call(*function_image)
+        func, metadata, bot, args, kwargs = self.unpack_func_image(function_image)
+        result_metadata = await sync_async_call(func, metadata, bot, *args, **kwargs)
 
         if len(self.__stack.get_stack()[chat_id][message_id]) == 1:
             func, _, bot, args, kwargs = self.unpack_func_image(function_image)
@@ -129,8 +129,8 @@ class StackStrider:
         if len(function_image) == 3:
             return *function_image, (), {}
         elif len(function_image) == 4 and isinstance(function_image[3], tuple):
-            return *function_image, ()
-        elif len(function_image) == 4 and isinstance(function_image[3], dict):
             return *function_image, {}
+        elif len(function_image) == 4 and isinstance(function_image[3], dict):
+            return *function_image, ()
         elif len(function_image) == 5:
             return function_image

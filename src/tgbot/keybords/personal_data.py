@@ -1,7 +1,7 @@
 from typing import Optional
 
 from tgbot.keybords.base_keyboard import BaseKeyboard, TextButton
-from tgbot.services.utils.callback_data import CallBackData
+from tgbot.services.callback_worker.callback_data import CallBackData
 
 
 class PersonalDataButtons(BaseKeyboard):

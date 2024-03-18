@@ -1,8 +1,10 @@
+from http import HTTPStatus
 from json import JSONEncoder
 
 import aiohttp
 
 from config import app_settings
+from exceptions import TooManyRequestsError
 from logger import LOGGER
 
 
@@ -33,6 +35,8 @@ class Request:
                     params=params,
                     **kwargs,
                 ) as resp:
+                    if resp.status == HTTPStatus.TOO_MANY_REQUESTS:
+                        raise TooManyRequestsError
                     yield resp
             except aiohttp.ClientError as e:
                 LOGGER.error(str(e))
