@@ -2,7 +2,7 @@ from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message
 
 from exceptions import ErrorMessage, BackgroundTaskError
-from tgbot.handlers.inline_menu import menu_handler
+from tgbot.handlers.menu.inline_menu import menu_handler
 from tgbot.states.login import Login
 from tgbot.services.api_worker.client import APIWorker
 from tgbot.services.user import UsersFactory
@@ -43,7 +43,7 @@ async def login_handler_email(message: Message, bot: AsyncTeleBot):
 
 @send_status_task_smile()
 async def login_handler_password(message: Message, bot: AsyncTeleBot):
-    from tgbot.handlers.outline_menu import create_authorized_outline_menu_handler
+    from tgbot.handlers.menu.outline_menu import create_authorized_outline_menu_handler
 
     usr_id = message.from_user.id
     user = _users[usr_id]

@@ -2,7 +2,7 @@ from telebot.async_telebot import AsyncTeleBot
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, Message
 
 from tgbot.handlers.cancel import cancel_state
-from tgbot.handlers.inline_menu import menu_handler
+from tgbot.handlers.menu.inline_menu import menu_handler
 from tgbot.handlers.login import login_handler_init
 from tgbot.handlers.logout import logout_handler
 from tgbot.services.message_scenarios.scenarios_handler import run_scenario

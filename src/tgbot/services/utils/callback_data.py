@@ -185,9 +185,11 @@ class CallBackStackWorker:
 
 class CallBackData:
     MARK = _auto_callback_data()
-    MARK_VIEW_FROM_COMMADER = _auto_callback_data()
+    MARK_VIEW_FROM_COMMANDER = _auto_callback_data()
     ATTEND = _auto_callback_data()
+    ATTEND_VIEW_FROM_COMMANDER = _auto_callback_data()
     EDIT_ATTEND = _auto_callback_data()
+    SET_ATTEND = _auto_callback_data()
     EDIT_PERSONAL_DATA = _auto_callback_data()
     PERSONAL_DATA = _auto_callback_data()
 

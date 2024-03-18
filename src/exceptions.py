@@ -27,6 +27,14 @@ class BackgroundTaskError(MainVucException):
     pass
 
 
+class FunctionStackEmpty(MainVucException):
+    pass
+
+
+class StackRoot(MainVucException):
+    pass
+
+
 class VucExceptionHandler(ExceptionHandler):
     async def handle(self, exception):
         LOGGER.err(exception)

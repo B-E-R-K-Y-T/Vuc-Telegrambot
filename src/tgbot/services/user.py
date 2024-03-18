@@ -64,7 +64,6 @@ class User:
         if self.__token is not None:
             self.__user_id = await self.user_id
             user = await self.api.get_self(self.__token, self.__user_id)
-
             tmp_date = str(user.get("date_of_birth")).split('T')[0]
 
             year, month, day = [int(item) for item in tmp_date.split('-')]
@@ -291,7 +290,7 @@ class UsersFactory:
 
         return await self.get_actual_user(telegram_id)
 
-    async def get_actual_user(self, telegram_id: int):
+    async def get_actual_user(self, telegram_id: int) -> User:
         now = time.time()
 
         if telegram_id in self.__users:

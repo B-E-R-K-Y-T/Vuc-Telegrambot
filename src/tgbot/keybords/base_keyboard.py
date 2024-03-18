@@ -24,6 +24,7 @@ class TextButton:
     INSTITUTE = "🏛️🎓Институт"
     DOS = "📚🎯Направление обучения"
     GROUP_STUDY = "👩‍🎓👨‍🎓Группа обучения"
+    EDIT_ATTEND = "❌Отметить отсутствие"
 
 
 class BaseKeyboard:
