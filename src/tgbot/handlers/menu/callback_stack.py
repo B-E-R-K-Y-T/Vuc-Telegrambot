@@ -56,7 +56,7 @@ class CallFunctionStack:
         else:
             self.__stack[chat_id][message_id].append((func, metadata, bot, args, kwargs))
 
-    def clear(self, chat_id: int, message_id: int):
+    def clear_message_stack(self, chat_id: int, message_id: int):
         if chat_id not in self.__stack:
             return None
 
@@ -66,7 +66,7 @@ class CallFunctionStack:
         self.__stack[chat_id][message_id].clear()
 
     def get_stack(self):
-        return self.__stack.copy()
+        return self.__stack
 
 
 class CallbackCollector:
@@ -79,7 +79,7 @@ class CallbackCollector:
         async def wrapper(metadata: Message | CallbackQuery, bot: AsyncTeleBot, *args, **kwargs):
             message: Message = get_message(metadata)
 
-            self.__stack.clear(message.chat.id, message.message_id)
+            self.__stack.clear_message_stack(message.chat.id, message.message_id)
 
             result_metadata = await sync_async_call(func, metadata, bot, *args, **kwargs)
 
