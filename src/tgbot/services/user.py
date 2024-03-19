@@ -345,7 +345,7 @@ class UsersFactory:
         return await self.get_actual_user(telegram_id)
 
     async def get_actual_user(self, telegram_id: int) -> User:
-        now = time.time()
+        now: float = time.time()
         user_state: Optional[UserState] = None
         selectable_user: Optional[User] = None
 
