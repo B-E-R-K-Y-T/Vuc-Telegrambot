@@ -14,7 +14,7 @@ async def personal_info(message: Message, bot: AsyncTeleBot):
     token = await user.token
     user_id = await user.user_id
 
-    data = await api.get_self(token, user_id)
+    data = await api.get_user_data(token, user_id)
     translate_map = {
         "name": "Имя",
         "date_of_birth": "Дата рождения",

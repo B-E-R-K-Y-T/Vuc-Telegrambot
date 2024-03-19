@@ -1,4 +1,4 @@
-from telebot.async_telebot import ExceptionHandler, AsyncTeleBot
+from telebot.async_telebot import ExceptionHandler
 
 from logger import LOGGER
 
@@ -35,7 +35,11 @@ class AchievedStackRoot(MainVucException):
     pass
 
 
-class TooManyRequestsError(MainVucException):
+class ClientError(MainVucException):
+    pass
+
+
+class TooManyRequestsError(ClientError):
     pass
 
 

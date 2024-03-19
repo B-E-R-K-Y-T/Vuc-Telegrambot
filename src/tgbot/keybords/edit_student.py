@@ -8,8 +8,8 @@ class EditStudent(BaseKeyboard):
     def __init__(self, *args, **kwargs):
         super().__init__(
             buttons={
-                TextButton.MARKS: CallBackData.MARK_VIEW_FROM_COMMANDER,
-                TextButton.ATTEND: CallBackData.EDIT_ATTEND,
+                TextButton.MARKS: CallBackData.MARK_VIEW_FROM_STUDENT_TO_COMMANDER,
+                TextButton.ATTEND: CallBackData.EDIT_ATTEND_OF_STUDENT,
             },
             *args, **kwargs
         )

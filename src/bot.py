@@ -16,6 +16,7 @@ from tgbot.handlers.login import (
     login_handler_email,
     login_handler_password,
 )
+from tgbot.handlers.set_attend import set_positive_attend, set_negative_attend
 from tgbot.handlers.setters_pd import (
     set_dos,
     set_phone,
@@ -35,6 +36,7 @@ from tgbot.handlers.start import start_command_handler
 from tgbot.middlewares.antiflood_middleware import AntiFloodMiddleware
 from tgbot.services.commands import CommandSequence
 from tgbot.services.outline_text_buttons import OutlineKeyboardButton
+from tgbot.states.attend import PositiveAttend, NegativeAttend
 from tgbot.states.login import Login
 from tgbot.states.setter_states import SetName, SetDob, SetGroupStudy, SetPhone, SetAddress, SetEmail, SetDos, \
     SetInstitute
@@ -75,7 +77,13 @@ def init_handlers():
         pass_bot=True,
     )
 
-    # Сеттеры персональных данных
+    # ---Сеттеры персональных данных------------------------------------------------------------------------------------
+    # setters_pd = {
+    #     set_name: SetName.init,
+    #     set_dob: SetName.init,
+    #     set_name: SetName.init,
+    # }
+    #
     init_base_filters(set_name, pass_bot=True, state=SetName.init)
     init_base_filters(set_dob, pass_bot=True, state=SetDob.init)
     init_base_filters(set_group_study, pass_bot=True, state=SetGroupStudy.init)
@@ -85,6 +93,9 @@ def init_handlers():
     init_base_filters(set_dos, pass_bot=True, state=SetDos.init)
     init_base_filters(set_institute, pass_bot=True, state=SetInstitute.init)
     # ------------------------------------------------------------------------------------------------------------------
+
+    init_base_filters(set_positive_attend, pass_bot=True, state=PositiveAttend.init)
+    init_base_filters(set_negative_attend, pass_bot=True, state=NegativeAttend.init)
 
     bot.register_message_handler(
         cancel_state, commands=[CommandSequence.CANCEL], pass_bot=True

@@ -45,7 +45,7 @@ class CallFunctionStack:
 
         if chat_id not in self.__stack:
             # Максимум у 3-х меню в одном чате может быть история просмотра
-            self.__stack[chat_id]: dict = LimitedDict(max_len=app_settings.MAX_COUNT_MENU_IN_CHAT)
+            self.__stack[chat_id]: LimitedDict = LimitedDict(max_len=app_settings.MAX_COUNT_MENU_IN_CHAT)
 
         if message_id not in self.__stack[chat_id]:
             self.__stack[chat_id][message_id]: list = []
@@ -75,7 +75,7 @@ class CallFunctionStack:
 
 class CallbackStackBuilder:
     def __init__(self, stack: CallFunctionStack):
-        self.__stack = stack
+        self.__stack: CallFunctionStack = stack
 
     def root(self, func: Callable | Awaitable) -> Callable[
         [Message | CallbackQuery, AsyncTeleBot, tuple[Any, ...], dict[str, Any]], Coroutine[Any, Any, Any]]:
@@ -104,8 +104,8 @@ class CallbackStackBuilder:
 
 class StackStrider:
     def __init__(self, stack: CallFunctionStack, collector: CallbackStackBuilder):
-        self.__stack = stack
-        self.__collector = collector
+        self.__stack: CallFunctionStack = stack
+        self.__collector: CallbackStackBuilder = collector
 
     async def back(self, chat_id: int, message_id: int):
         function_image: Optional[tuple] = self.__stack.get_last_function_image(chat_id, message_id)

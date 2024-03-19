@@ -18,6 +18,12 @@ def get_message(metadata: Message | CallbackQuery) -> Message:
         raise TypeError
 
 
+async def send_temp_smile(message: Message, bot: AsyncTeleBot, smile: str, lifetime_smile: float = 2.5):
+    msg = await bot.send_message(message.chat.id, smile)
+    await asyncio.sleep(lifetime_smile)
+    await bot.delete_message(message.chat.id, msg.message_id)
+
+
 def send_status_task_smile(
         *,
         send_success_status_smile: bool = True,

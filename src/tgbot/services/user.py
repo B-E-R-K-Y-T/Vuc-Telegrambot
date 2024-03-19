@@ -12,6 +12,14 @@ from tgbot.services.utils.message_tools import get_message
 from tgbot.services.utils.singleton import singleton
 
 
+class UserState:
+    pass
+
+
+class UserStates:
+    WORK_SELECTED_USER = UserState()
+
+
 class User:
     def __init__(
             self,
@@ -58,13 +66,14 @@ class User:
         self.__is_child: bool = is_child
         self.__subordinates: dict["User.user_id", "User"] = {}
         self.__marks: dict = {}
+        self.__state: Optional[UserState] = None
 
     async def async_init(self):
         self.__token = await self.token
 
         if self.__token is not None:
             self.__user_id = await self.user_id
-            user = await self.api.get_self(self.__token, self.__user_id)
+            user = await self.api.get_user_data(self.__token, self.__user_id)
             tmp_date = str(user.get("date_of_birth")).split('T')[0]
 
             year, month, day = [int(item) for item in tmp_date.split('-')]
@@ -82,11 +91,34 @@ class User:
 
         return self
 
+    async def toggle_state(self, state: UserState):
+        """
+        Нужно, чтобы перевести пользователя в некоторое состояние и вывести его в состояние по умолчанию, при
+        обратном движении по стеку.
+
+        Пример:
+        "Меню командира отделения -> Студент 1 <ПРЕКЛЮЧАЕМСЯ В СОСТОЯНИЕ ПРОСМОТРА НЕ СВОИХ ДАННЫХ> -> Оценки"
+        "Меню командира отделения <- Студент 1 <СБРАСЫВАЕМ СОСТОЯНИЕ> <- Оценки"
+        """
+        if self.__state != state:
+            self.__state = state
+        else:
+            self.__state = None
+
+    def set_state(self, state: UserState):
+        self.__state = state
+
+    def clear_state(self):
+        self.__state = None
+
     async def add_subordinate_user(self, user: "User"):
         if await user.user_id not in self.__subordinates:
             self.__subordinates[await user.user_id] = user
 
     def get_subordinate_user(self, user_id) -> Optional["User"]:
+        if self.__subordinates is None:
+            self.__subordinates = self.get_subordinate_users()
+
         return self.__subordinates.get(user_id)
 
     async def get_subordinate_users(self) -> dict[Any, "User"]:
@@ -121,12 +153,13 @@ class User:
                 subordinate["token"] = token
                 subordinate["is_child"] = True
 
-                user = UsersFactory().create_user(subordinate)
+                user = UsersFactory().create_user_child(subordinate)
+
                 await self.add_subordinate_user(user)
 
         return self.__subordinates
 
-    async def get_user_metadata(self) -> tuple | None:
+    async def get_user_metadata(self) -> Optional[tuple]:
         user_metadata = await self.db.get_value(key=str(self.telegram_id))
 
         if user_metadata is None:
@@ -137,16 +170,19 @@ class User:
             return date_, jwt, email
 
     async def get_marks(self, semester: int) -> list[dict]:
-        if semester not in self.__marks:
-            marks = await self.api.get_marks_by_semester(await self.token, await self.user_id, semester)
-            res = []
+        marks = await self.api.get_marks_by_semester(await self.token, await self.user_id, semester)
+        res = []
 
-            for mark in marks.values():
-                res.append(mark)
+        for mark in marks.values():
+            res.append(mark)
 
-            self.__marks[semester] = res
+        self.__marks[semester] = res
 
         return self.__marks[semester]
+
+    @property
+    def state(self):
+        return self.__state
 
     @property
     async def semesters(self):
@@ -157,14 +193,13 @@ class User:
 
     @property
     async def attend(self):
-        if self.__attend is None:
-            self.__attend = await self.api.get_attend(await self.token, await self.user_id)
-            temp_res = []
+        _attend = await self.api.get_attend(await self.token, await self.user_id)
+        temp_res = []
 
-            for at in self.__attend.values():
-                temp_res.append(at)
+        for at in _attend.values():
+            temp_res.append(at)
 
-            self.__attend = temp_res
+        self.__attend = temp_res
 
         return self.__attend
 
@@ -311,15 +346,29 @@ class UsersFactory:
 
     async def get_actual_user(self, telegram_id: int) -> User:
         now = time.time()
+        user_state: Optional[UserState] = None
+        selectable_user: Optional[User] = None
 
         if telegram_id in self.__users:
             user, created_at = self.__users.get(telegram_id)
 
             if user is not None:
                 if now - created_at > app_settings.TIME_LIFE_CACHE_USERS:
+                    old_user_image, _ = self.__users[telegram_id]
+                    user_state = old_user_image.state
+                    selectable_user = old_user_image.selectable_user
+
                     del self.__users[telegram_id]
 
-        return await self.get_user_by_telegram_id(telegram_id)
+        actual_user: User = await self.get_user_by_telegram_id(telegram_id)
+
+        if actual_user.state is None:
+            actual_user.set_state(user_state)
+
+        if actual_user.selectable_user is None:
+            actual_user.selectable_user = selectable_user
+
+        return actual_user
 
     async def get_user_by_telegram_id(self, telegram_id: int) -> User:
         if telegram_id not in self.__users:
@@ -332,14 +381,11 @@ class UsersFactory:
 
         return user
 
-    def create_user(self, data: dict) -> User:
-        telegram_id: int = data.get("telegram_id")
-        user = User(**data)
-        created_at = time.time()
+    @staticmethod
+    def create_user_child(user_image: dict) -> User:
+        user = User(**user_image)
 
-        self.__users[telegram_id] = user, created_at
-
-        return self.__users[telegram_id][0]
+        return user
 
     async def delete_user(self, telegram_id: int) -> None:
         if telegram_id in self.__users:

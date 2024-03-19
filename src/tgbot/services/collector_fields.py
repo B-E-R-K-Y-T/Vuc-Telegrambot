@@ -2,7 +2,7 @@ class CollectorField:
     field_type = type
 
     @classmethod
-    def fields(cls):
+    def fields(cls) -> list[str]:
         res = []
 
         for name_attr, type_ in cls.__dict__["__annotations__"].items():

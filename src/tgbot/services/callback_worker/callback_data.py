@@ -1,13 +1,10 @@
-import asyncio
-from copy import copy
-from functools import wraps
-from typing import Callable
+import hashlib
 
-from telebot.async_telebot import AsyncTeleBot
-from telebot.types import Message, CallbackQuery
-from typing_extensions import Awaitable
+from typing import Optional
 
-from tgbot.services.utils.message_tools import get_message
+from telebot.types import CallbackQuery
+
+PREFIX_SEPARATOR: str = hashlib.md5(b".").hexdigest()
 
 
 class _auto_callback_data:
@@ -16,16 +13,34 @@ class _auto_callback_data:
     def __new__(cls, *args, **kwargs):
         cls.state += 1
 
-        return f"callback_{cls.state}"
+        return f"{CallBackPrefix.CALLBACK}{cls.state}"
+
+
+def get_callback_payload(call: CallbackQuery) -> Optional[str]:
+    if PREFIX_SEPARATOR in call.data:
+        data: list[str] = call.data.split(PREFIX_SEPARATOR)
+
+        if len(data) > 1:
+            return data[1]
+
+    return None
+
+
+class CallBackPrefix:
+    STUDENT = f"student{PREFIX_SEPARATOR}"
+    CALLBACK = f"callback{PREFIX_SEPARATOR}"
+    EDIT_STUDENT = f"edit_student{PREFIX_SEPARATOR}"
 
 
 class CallBackData:
     MARK = _auto_callback_data()
-    MARK_VIEW_FROM_COMMANDER = _auto_callback_data()
+    MARK_VIEW_FROM_STUDENT_TO_COMMANDER = _auto_callback_data()
     ATTEND = _auto_callback_data()
     ATTEND_VIEW_FROM_COMMANDER = _auto_callback_data()
-    EDIT_ATTEND = _auto_callback_data()
+    EDIT_ATTEND_OF_STUDENT = _auto_callback_data()
     SET_ATTEND = _auto_callback_data()
+    SET_POSITIVE_ATTEND = _auto_callback_data()
+    SET_NEGATIVE_ATTEND = _auto_callback_data()
     EDIT_PERSONAL_DATA = _auto_callback_data()
     PERSONAL_DATA = _auto_callback_data()
 
@@ -67,4 +82,7 @@ class CallBackData:
 
 __all__ = (
     CallBackData.__name__,
+    CallBackPrefix.__name__,
+    get_callback_payload.__name__,
+    "PREFIX_SEPARATOR",
 )

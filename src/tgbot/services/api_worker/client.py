@@ -1,5 +1,6 @@
 import json
 from copy import copy
+from datetime import date
 from http import HTTPStatus
 
 from tgbot.services.api_worker.request import Request
@@ -75,7 +76,7 @@ class APIWorker:
         if resp.status == HTTPStatus.OK.value:
             return await resp.json()
 
-    async def get_self(self, token: str, user_id: int) -> dict:
+    async def get_user_data(self, token: str, user_id: int) -> dict:
         resp = await self.request.get(
             "/users/get_self",
             headers=self.headers,
@@ -276,6 +277,26 @@ class APIWorker:
         )
 
         return resp
+
+    async def confirmation_attend_user(self, token: str, attend_id: int, confirmed: bool = False) -> str:
+        resp = await self.request.patch(
+            "/attends/confirmation_attend_user",
+            headers=self.headers,
+            cookies={"bonds": token},
+            json={"id": attend_id, "confirmed": confirmed},
+        )
+
+        return resp
+
+    async def set_visit_user(self, token: str, date_v: str, visiting: int, user_id: int) -> int:
+        resp = await self.request.post(
+            "/professor/set_visit_user",
+            headers=self.headers,
+            cookies={"bonds": token},
+            json={"date_v": date_v, "visiting": visiting, "user_id": user_id},
+        )
+
+        return await resp.json()
 
 
 __all__ = (

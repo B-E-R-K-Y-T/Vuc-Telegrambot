@@ -8,7 +8,7 @@ class EditAttend(BaseKeyboard):
     def __init__(self, *args, **kwargs):
         super().__init__(
             buttons={
-                TextButton.ATTEND: CallBackData.ATTEND_VIEW_FROM_COMMANDER,
+                TextButton.VIEW_ATTEND: CallBackData.ATTEND_VIEW_FROM_COMMANDER,
                 TextButton.EDIT_ATTEND: CallBackData.SET_ATTEND,
             },
             *args, **kwargs

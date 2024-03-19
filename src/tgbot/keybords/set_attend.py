@@ -4,14 +4,12 @@ from tgbot.keybords.base_keyboard import BaseKeyboard, TextButton
 from tgbot.services.callback_worker.callback_data import CallBackData
 
 
-class Student(BaseKeyboard):
+class SetAttend(BaseKeyboard):
     def __init__(self, *args, **kwargs):
         super().__init__(
             buttons={
-                TextButton.MARKS: CallBackData.MARK,
-                TextButton.VIEW_ATTEND: CallBackData.ATTEND,
-                TextButton.PERSONAL_DATA: CallBackData.PERSONAL_DATA,
-                TextButton.EDIT_PERSONAL_DATA: CallBackData.EDIT_PERSONAL_DATA,
+                TextButton.POSITIVE_ATTEND: CallBackData.SET_POSITIVE_ATTEND,
+                TextButton.NEGATIVE_ATTEND: CallBackData.SET_NEGATIVE_ATTEND,
             },
             *args, **kwargs
         )
