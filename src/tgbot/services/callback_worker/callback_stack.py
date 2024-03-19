@@ -105,7 +105,6 @@ class StackStrider:
         self.__collector = collector
 
     async def back(self, chat_id: int, message_id: int):
-        print(self.__stack.get_stack())
         function_image: Optional[tuple] = self.__stack.get_last_function_image(chat_id, message_id)
 
         if function_image is not None:

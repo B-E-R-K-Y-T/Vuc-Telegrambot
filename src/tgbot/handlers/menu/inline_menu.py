@@ -55,7 +55,6 @@ async def view_squad_menu(message: Message, bot: AsyncTeleBot, user: User, squad
     await squad_menu(message, bot, user, squad_num)
 
 
-@stack_builder.listen_call
 async def squad_menu(message: Message, bot: AsyncTeleBot, user: User, squad_number: Optional[int] = None):
     buttons = {}
     squads = {1: [], 2: [], 3: []}
@@ -150,8 +149,6 @@ async def send_personal_info(message: Message, bot: AsyncTeleBot):
 
 
 async def edit_menu(message: Message, bot: AsyncTeleBot, text: str, keyboard: InlineKeyboardMarkup):
-    # await bot.delete_message(message.chat.id, message.message_id)
-    # await bot.send_message(message.chat.id, text, reply_markup=keyboard)
     await bot.edit_message_text(
         text,
         message.chat.id,
