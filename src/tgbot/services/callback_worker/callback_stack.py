@@ -6,7 +6,7 @@ from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message, CallbackQuery
 
 from config import app_settings
-from exceptions import FunctionStackEmpty, StackRoot
+from exceptions import FunctionCallStackEmpty, AchievedStackRoot
 from tgbot.services.utils.collections import LimitedDict
 from tgbot.services.utils.message_tools import get_message
 from tgbot.services.utils.util import sync_async_call
@@ -14,7 +14,7 @@ from tgbot.services.utils.util import sync_async_call
 
 class CallFunctionStack:
     def __init__(self):
-        self.__stack = {}
+        self.__stack: dict = {}
 
     def get_last_function_image(self, chat_id: int, message_id: int) -> Optional[tuple]:
         if chat_id not in self.__stack:
@@ -69,7 +69,7 @@ class CallFunctionStack:
         self.__stack[chat_id][message_id].clear()
         del self.__stack[chat_id][message_id]
 
-    def get_stack(self):
+    def get_stack(self) -> dict:
         return self.__stack
 
 
@@ -115,7 +115,7 @@ class StackStrider:
             self.__collector.listen_call(func)
 
         if function_image is None:
-            raise FunctionStackEmpty
+            raise FunctionCallStackEmpty
 
         func, metadata, bot, args, kwargs = self.unpack_func_image(function_image)
         result_metadata = await sync_async_call(func, metadata, bot, *args, **kwargs)
@@ -125,7 +125,7 @@ class StackStrider:
             self.__stack.clear_message_stack(chat_id, message_id)
             self.__stack.add(func, result_metadata, bot, args, kwargs)
 
-            raise StackRoot
+            raise AchievedStackRoot
 
     @staticmethod
     def unpack_func_image(function_image: tuple) -> tuple:

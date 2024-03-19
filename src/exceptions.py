@@ -27,11 +27,11 @@ class BackgroundTaskError(MainVucException):
     pass
 
 
-class FunctionStackEmpty(MainVucException):
+class FunctionCallStackEmpty(MainVucException):
     pass
 
 
-class StackRoot(MainVucException):
+class AchievedStackRoot(MainVucException):
     pass
 
 

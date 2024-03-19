@@ -1,7 +1,7 @@
 from telebot.async_telebot import AsyncTeleBot
 from telebot.types import CallbackQuery, Message
 
-from exceptions import FunctionStackEmpty, StackRoot
+from exceptions import FunctionCallStackEmpty, AchievedStackRoot
 from tgbot.services.callback_worker.callback_stack import StackStrider
 from tgbot.handlers.menu.inline_menu import self_menu, function_stack, stack_builder, semesters_menu, send_marks, \
     menu_handler, send_personal_info, personal_menu, view_attend, squad_commander_start_menu, view_squad_menu, \
@@ -47,9 +47,9 @@ async def callback_handler(call: CallbackQuery, bot: AsyncTeleBot):
     if call.data == CallBackData.BACK:
         try:
             await stack_strider.back(message.chat.id, message.message_id)
-        except StackRoot as _:
+        except AchievedStackRoot as _:
             await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-        except FunctionStackEmpty as _:
+        except FunctionCallStackEmpty as _:
             await bot.send_message(
                 message.chat.id,
                 f"История пуста. Попробуйте открыть меню ещё раз: /{CommandSequence.MENU}"
