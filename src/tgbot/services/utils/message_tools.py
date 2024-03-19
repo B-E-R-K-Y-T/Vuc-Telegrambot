@@ -43,7 +43,7 @@ def send_status_task_smile(
                 else:
                     res = func(metadata, bot, *args, **kwargs)
             except Exception as e:
-                LOGGER.err(e)
+                LOGGER.err(str(e))
 
                 await bot.edit_message_text(failed_smile, message.chat.id, msg_process.message_id)
             else:
