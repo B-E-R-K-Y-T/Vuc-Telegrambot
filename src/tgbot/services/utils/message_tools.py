@@ -20,13 +20,13 @@ def get_message(metadata: Message | CallbackQuery) -> Message:
 
 def send_status_task_smile(
         *,
-        send_ok_status_smile: bool = True,
+        send_success_status_smile: bool = True,
         lifetime_smile: float = 2.5,
         success_smile: str = "✅",
         failed_smile: str = "❌",
         waiting_smile: str = "⏳",
 ):
-    if not send_ok_status_smile:
+    if not send_success_status_smile:
         lifetime_smile = 0
 
     def decorator(func: Callable | Awaitable) -> Callable | Awaitable:
@@ -47,7 +47,7 @@ def send_status_task_smile(
 
                 await bot.edit_message_text(failed_smile, message.chat.id, msg_process.message_id)
             else:
-                if send_ok_status_smile:
+                if send_success_status_smile:
                     await bot.edit_message_text(success_smile, message.chat.id, msg_process.message_id)
                 return res
             finally:

@@ -20,7 +20,7 @@ function_stack = CallFunctionStack()
 stack_builder = CallbackStackBuilder(function_stack)
 
 
-@send_status_task_smile(send_ok_status_smile=False)
+@send_status_task_smile(send_success_status_smile=False)
 async def menu_handler(message: Message, bot: AsyncTeleBot):
     user = await UsersFactory().get_user(message)
     role = await user.role

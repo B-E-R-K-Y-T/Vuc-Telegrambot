@@ -30,6 +30,8 @@ class AppSettings(BaseSettings):
     TIME_LIFE_SESSION: int
     TIME_LIFE_CACHE_USERS: int
 
+    MAX_COUNT_MENU_IN_CHAT: int
+
     model_config = SettingsConfigDict(env_file=f"{BASE_DIR}/.env")
 
 

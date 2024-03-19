@@ -5,7 +5,7 @@ from typing import Optional, BinaryIO
 from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message
 
-__TARGET__ = "__TARGET__"
+__TARGET__ = "."
 
 
 class NextMessage:

@@ -5,6 +5,7 @@ from typing import Callable, Awaitable, Optional, Any, Coroutine
 from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message, CallbackQuery
 
+from config import app_settings
 from exceptions import FunctionStackEmpty, StackRoot
 from tgbot.services.utils.collections import LimitedDict
 from tgbot.services.utils.message_tools import get_message
@@ -44,7 +45,7 @@ class CallFunctionStack:
 
         if chat_id not in self.__stack:
             # Максимум у 3-х меню в одном чате может быть история просмотра
-            self.__stack[chat_id]: dict = LimitedDict(max_len=3)
+            self.__stack[chat_id]: dict = LimitedDict(max_len=app_settings.MAX_COUNT_MENU_IN_CHAT)
 
         if message_id not in self.__stack[chat_id]:
             self.__stack[chat_id][message_id]: list = []
