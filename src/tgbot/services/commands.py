@@ -28,3 +28,4 @@ class CommandSequence(Commands):
     LOGOUT: Command = "logout"
     MENU: Command = "menu"
     SELF: Command = "self"
+    HELP: Command = "help"

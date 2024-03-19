@@ -10,6 +10,7 @@ from tgbot.filters.admin_filter import AdminFilter
 from tgbot.filters.check_login import CheckLogin
 from tgbot.handlers.cancel import cancel_state
 from tgbot.handlers.default_message import default_answer
+from tgbot.handlers.help import cmd_help
 from tgbot.handlers.login import (
     login_handler_init,
     login_handler_email,
@@ -54,6 +55,9 @@ def init_handlers():
 
     bot.register_message_handler(
         start_command_handler, commands=[CommandSequence.START], pass_bot=True
+    )
+    bot.register_message_handler(
+        cmd_help, commands=[CommandSequence.HELP], pass_bot=True
     )
 
     bot.register_message_handler(
