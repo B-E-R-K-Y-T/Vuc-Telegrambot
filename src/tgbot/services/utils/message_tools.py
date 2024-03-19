@@ -1,6 +1,6 @@
 import asyncio
 from functools import wraps
-from typing import Callable
+from typing import Callable, Any
 
 from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message, CallbackQuery
@@ -32,8 +32,8 @@ def send_status_task_smile(
     def decorator(func: Callable | Awaitable) -> Callable | Awaitable:
         @wraps(func)
         async def wrapper(
-                metadata: Message | CallbackQuery, bot: AsyncTeleBot, *args, **kwargs
-        ):
+                metadata: Message | CallbackQuery, bot: AsyncTeleBot, *args: Any, **kwargs: Any
+        ) -> Any:
             message: Message = get_message(metadata)
             msg_process: Message = await bot.send_message(message.chat.id, waiting_smile)
 
