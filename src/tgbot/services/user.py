@@ -153,9 +153,9 @@ class User:
                 subordinate["token"] = token
                 subordinate["is_child"] = True
 
-                user = UsersFactory().create_user_child(subordinate)
+                user_child: User = UsersFactory().create_user(subordinate)
 
-                await self.add_subordinate_user(user)
+                await self.add_subordinate_user(user_child)
 
         return self.__subordinates
 
@@ -382,7 +382,7 @@ class UsersFactory:
         return user
 
     @staticmethod
-    def create_user_child(user_image: dict) -> User:
+    def create_user(user_image: dict) -> User:
         user = User(**user_image)
 
         return user
