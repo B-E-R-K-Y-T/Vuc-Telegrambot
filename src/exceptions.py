@@ -45,7 +45,8 @@ class TooManyRequestsError(ClientError):
 
 class VucExceptionHandler(ExceptionHandler):
     async def handle(self, exception):
-        LOGGER.err(exception)
+        print(1234)
+        LOGGER.error(exception)
 
 
 class ErrorMessage:

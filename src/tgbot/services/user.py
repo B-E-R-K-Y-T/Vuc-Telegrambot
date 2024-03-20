@@ -372,7 +372,7 @@ class UsersFactory:
 
     async def get_user_by_telegram_id(self, telegram_id: int) -> User:
         if telegram_id not in self.__users:
-            created_at = time.time()
+            created_at: float = time.time()
             user = await User(telegram_id=telegram_id).async_init()
 
             self.__users[telegram_id] = user, created_at

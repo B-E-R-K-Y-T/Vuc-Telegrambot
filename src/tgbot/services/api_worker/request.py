@@ -37,14 +37,6 @@ class Request:
                         json=json,
                         **kwargs,
                 ) as resp:
-                    if resp.status not in (
-                            HTTPStatus.OK,
-                            HTTPStatus.CREATED,
-                            HTTPStatus.NO_CONTENT
-                    ):
-                        print(resp.status)
-                        raise ClientError
-
                     if resp.status == HTTPStatus.TOO_MANY_REQUESTS:
                         raise TooManyRequestsError
 

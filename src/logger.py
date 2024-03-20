@@ -29,7 +29,7 @@ class Logger:
     def info(self, *args, **kwargs):
         self.__logger.info(*args, **kwargs)
 
-    def err(self, *args, **kwargs):
+    def error(self, *args, **kwargs):
         self.__logger.error(*args, **kwargs)
 
 
