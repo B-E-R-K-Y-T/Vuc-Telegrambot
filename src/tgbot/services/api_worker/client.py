@@ -78,7 +78,7 @@ class APIWorker:
 
     async def get_user_data(self, token: str, user_id: int) -> dict:
         resp = await self.request.get(
-            "/users/get_self",
+            "/users/get_user",
             headers=self.headers,
             cookies={"bonds": token},
             params={"user_id": user_id},
