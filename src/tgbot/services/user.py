@@ -132,10 +132,10 @@ class User:
                     await self.squad_number
                 )
             elif await self.role == Roles.platoon_commander:
-                _subordinates = await self.api.get_platoon(
+                _subordinates = (await self.api.get_platoon(
                     await self.token,
                     await self.platoon_number
-                )
+                ))["students"]
 
             for subordinate in _subordinates.values():
                 if await self.role == Roles.squad_commander:

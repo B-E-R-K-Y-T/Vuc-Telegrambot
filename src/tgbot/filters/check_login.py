@@ -1,9 +1,10 @@
 from telebot.asyncio_filters import SimpleCustomFilter
-from telebot.types import Message
+from telebot.types import Message, CallbackQuery
 from telebot.async_telebot import AsyncTeleBot
 
 from tgbot.services.user import UsersFactory
 from tgbot.services.commands import CommandSequence
+from tgbot.services.utils.message_tools import get_message
 
 
 class CheckLogin(SimpleCustomFilter):
@@ -12,7 +13,8 @@ class CheckLogin(SimpleCustomFilter):
     def __init__(self, bot):
         self.bot: AsyncTeleBot = bot
 
-    async def check(self, message: Message):
+    async def check(self, metadata: Message | CallbackQuery):
+        message = get_message(metadata)
         user = await UsersFactory().get_user(message)
 
         if await user.token is None:
