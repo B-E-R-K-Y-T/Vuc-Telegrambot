@@ -18,8 +18,7 @@ class APIWorker:
         Вернет JWT токен в виде строки
         """
         self.headers["Content-Type"] = "application/x-www-form-urlencoded"
-
-        data = {"username": username, "password": password}
+        data: dict = {"username": username, "password": password}
 
         resp = await self.request.post(
             "/auth/jwt/login", headers=self.headers, data=data
@@ -29,7 +28,7 @@ class APIWorker:
             return None
 
         if resp.status == HTTPStatus.NO_CONTENT.value:
-            token = resp.cookies.get("bonds").value
+            token: str = resp.cookies.get("bonds").value
 
             return token
 

@@ -16,7 +16,7 @@ class CallFunctionStack:
     def __init__(self):
         self.__stack: dict = {}
 
-    def get_last_function_image(self, chat_id: int, message_id: int) -> Optional[tuple]:
+    def get_previous_function_image(self, chat_id: int, message_id: int) -> Optional[tuple]:
         if chat_id not in self.__stack:
             return None
 
@@ -108,7 +108,7 @@ class StackStrider:
         self.__collector: CallbackStackBuilder = collector
 
     async def back(self, chat_id: int, message_id: int):
-        function_image: Optional[tuple] = self.__stack.get_last_function_image(chat_id, message_id)
+        function_image: Optional[tuple] = self.__stack.get_previous_function_image(chat_id, message_id)
 
         if function_image is not None:
             func, _, _, _, _ = self.unpack_func_image(function_image)

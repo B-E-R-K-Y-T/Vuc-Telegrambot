@@ -36,6 +36,7 @@ from tgbot.handlers.start import start_command_handler
 from tgbot.middlewares.antiflood_middleware import AntiFloodMiddleware
 from tgbot.services.commands import CommandSequence
 from tgbot.services.outline_text_buttons import OutlineKeyboardButton
+from tgbot.services.websocket_woker.lestener import WebSocketClient
 from tgbot.states.attend import PositiveAttend, NegativeAttend
 from tgbot.states.login import Login
 from tgbot.states.setter_states import SetName, SetDob, SetGroupStudy, SetPhone, SetAddress, SetEmail, SetDos, \
@@ -141,13 +142,22 @@ def init_filters():
         bot.add_custom_filter(filter_)
 
 
-async def run():
+async def websocket_task():
+    client = WebSocketClient("ws://localhost:8000/ws/tasks", bot)
+    await client.run()
+
+
+async def bot_task():
     await bot.polling(non_stop=True)
 
 
-if __name__ == "__main__":
+async def main():
     init_handlers()
     init_middlewares()
     init_filters()
 
-    asyncio.run(run())
+    await asyncio.gather(websocket_task(), bot_task())
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

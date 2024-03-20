@@ -195,10 +195,10 @@ class User:
 
     @property
     async def attend(self):
-        _attend = await self.api.get_attend(await self.token, await self.user_id)
+        attend_ = await self.api.get_attend(await self.token, await self.user_id)
         temp_res = []
 
-        for at in _attend.values():
+        for at in attend_.values():
             temp_res.append(at)
 
         self.__attend = temp_res
@@ -206,7 +206,7 @@ class User:
         return self.__attend
 
     @property
-    def selectable_user(self):
+    def selectable_user(self) -> "User":
         return self.__selectable_user
 
     @selectable_user.setter

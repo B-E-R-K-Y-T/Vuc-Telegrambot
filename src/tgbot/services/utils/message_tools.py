@@ -32,6 +32,12 @@ def send_status_task_smile(
         failed_smile: str = "❌",
         waiting_smile: str = "⏳",
 ):
+    """
+    Требует, чтобы у обернутой функции были аргументы:
+
+    №1  Message | CallbackQuery
+    №2 AsyncTeleBot
+    """
     if not send_success_status_smile:
         lifetime_smile = 0
 

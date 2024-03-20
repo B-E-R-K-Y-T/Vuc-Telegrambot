@@ -35,12 +35,14 @@ class CallBackPrefix:
 class CallBackData:
     MARK = _auto_callback_data()
     MARK_VIEW_FROM_STUDENT_TO_COMMANDER = _auto_callback_data()
+
     ATTEND = _auto_callback_data()
     ATTEND_VIEW_FROM_COMMANDER = _auto_callback_data()
     EDIT_ATTEND_OF_STUDENT = _auto_callback_data()
     SET_ATTEND = _auto_callback_data()
     SET_POSITIVE_ATTEND = _auto_callback_data()
     SET_NEGATIVE_ATTEND = _auto_callback_data()
+
     EDIT_PERSONAL_DATA = _auto_callback_data()
     PERSONAL_DATA = _auto_callback_data()
 

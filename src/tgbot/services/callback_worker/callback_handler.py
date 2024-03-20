@@ -1,5 +1,5 @@
 from telebot.async_telebot import AsyncTeleBot
-from telebot.types import CallbackQuery, Message, Update
+from telebot.types import CallbackQuery, Message
 
 from exceptions import FunctionCallStackEmpty, AchievedStackRoot
 from tgbot.keybords.base_keyboard import BaseKeyboard
@@ -20,7 +20,6 @@ from tgbot.handlers.menu.inline_menu import (
     set_positive_attend_state, set_negative_attend_state,
 )
 from tgbot.services.api_worker.client import APIWorker
-from tgbot.services.commands import CommandSequence
 from tgbot.services.user import User, UsersFactory, UserStates
 from tgbot.services.utils.message_tools import get_message, send_temp_smile
 from tgbot.services.callback_worker.callback_data import (
@@ -153,9 +152,6 @@ async def callback_handler(call: CallbackQuery, bot: AsyncTeleBot):
 
     elif call.data.startswith(CallBackPrefix.EDIT_STUDENT):
         target_user_telegram_id: int = int(get_callback_payload(call))
-        # select_user: User = await UsersFactory().get_user_by_telegram_id(
-        #     target_user_telegram_id
-        # )
         select_user: User = current_user.get_subordinate_user(target_user_telegram_id)
         current_user.selectable_user = select_user
 
@@ -178,4 +174,3 @@ async def callback_handler(call: CallbackQuery, bot: AsyncTeleBot):
             await set_negative_attend_state(message, bot)
         else:
             await send_temp_smile(message, bot, "❌")
-
