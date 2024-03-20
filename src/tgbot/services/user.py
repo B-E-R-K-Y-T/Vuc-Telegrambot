@@ -293,7 +293,7 @@ class User:
         if self.__is_child and self.__token is not None:
             return self.__token
 
-        now = time.time()
+        ttl: float = time.time()
         user_metadata = await self.get_user_metadata()
 
         if user_metadata is None:
@@ -301,7 +301,7 @@ class User:
 
         date_, jwt, _ = user_metadata
 
-        if now - int(date_) > app_settings.TIME_LIFE_SESSION:
+        if ttl - int(date_) > app_settings.TIME_LIFE_SESSION:
             await self.db.del_value(key=str(self.telegram_id))
             return None
 

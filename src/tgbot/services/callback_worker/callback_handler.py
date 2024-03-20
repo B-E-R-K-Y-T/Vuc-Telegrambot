@@ -2,6 +2,7 @@ from telebot.async_telebot import AsyncTeleBot
 from telebot.types import CallbackQuery, Message, Update
 
 from exceptions import FunctionCallStackEmpty, AchievedStackRoot
+from tgbot.keybords.base_keyboard import BaseKeyboard
 from tgbot.services.callback_worker.callback_stack import StackStrider
 from tgbot.handlers.menu.inline_menu import (
     self_menu,
@@ -67,9 +68,12 @@ async def callback_handler(call: CallbackQuery, bot: AsyncTeleBot):
                 chat_id=message.chat.id, message_id=message.message_id
             )
         except FunctionCallStackEmpty as _:
+            markup_refresh = BaseKeyboard(back_button_on=False).menu()
+
             await bot.send_message(
                 message.chat.id,
-                f"История пуста. Попробуйте открыть меню ещё раз: /{CommandSequence.MENU}",
+                f"История пуста. Попробуйте открыть меню ещё раз.",
+                reply_markup=markup_refresh
             )
 
     elif call.data == CallBackData.REOPEN_MENU:
