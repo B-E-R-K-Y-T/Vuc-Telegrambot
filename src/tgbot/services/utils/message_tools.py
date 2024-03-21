@@ -35,7 +35,7 @@ def send_status_task_smile(
     """
     Требует, чтобы у обернутой функции были аргументы:
 
-    №1  Message | CallbackQuery
+    №1 Message | CallbackQuery
     №2 AsyncTeleBot
     """
     if not send_success_status_smile:

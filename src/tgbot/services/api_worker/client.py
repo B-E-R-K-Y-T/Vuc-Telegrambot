@@ -27,7 +27,12 @@ class APIWorker:
             return None
 
         if resp.status == HTTPStatus.NO_CONTENT.value:
-            token: str = resp.cookies.get("bonds").seed
+            token_morsel = resp.cookies.get("bonds")
+
+            if token_morsel:
+                token = token_morsel.value
+            else:
+                token = None
 
             return token
 

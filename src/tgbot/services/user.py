@@ -250,10 +250,9 @@ class User:
 
     @property
     async def count_squad_in_platoon(self):
-        if self.__count_squad_in_platoon is None:
-            self.__count_squad_in_platoon = await self.api.get_count_squad_in_platoon(
-                await self.token,
-                await self.platoon_number)
+        self.__count_squad_in_platoon = await self.api.get_count_squad_in_platoon(
+            await self.token,
+            await self.platoon_number)
 
         return self.__count_squad_in_platoon
 
