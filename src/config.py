@@ -32,6 +32,9 @@ class AppSettings(BaseSettings):
 
     MAX_COUNT_MENU_IN_CHAT: int
 
+    TASK_WORKER_HOST: str
+    TASK_WORKER_PORT: int
+
     model_config = SettingsConfigDict(env_file=f"{BASE_DIR}/.env")
 
 

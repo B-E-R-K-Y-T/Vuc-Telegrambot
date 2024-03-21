@@ -1,6 +1,5 @@
 import json
 from copy import copy
-from datetime import date
 from http import HTTPStatus
 
 from tgbot.services.api_worker.request import Request
@@ -28,7 +27,7 @@ class APIWorker:
             return None
 
         if resp.status == HTTPStatus.NO_CONTENT.value:
-            token: str = resp.cookies.get("bonds").value
+            token: str = resp.cookies.get("bonds").seed
 
             return token
 

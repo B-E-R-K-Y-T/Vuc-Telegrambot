@@ -4,16 +4,13 @@ from typing import Optional
 
 from telebot.types import CallbackQuery
 
+from tgbot.services.utils.util import auto_value
+
 PREFIX_SEPARATOR: str = hashlib.md5(b".").hexdigest()
 
 
-class _auto_callback_data:
-    state = 0
-
-    def __new__(cls, *args, **kwargs):
-        cls.state += 1
-
-        return f"{CallBackPrefix.CALLBACK}{cls.state}"
+def _auto_callback_data():
+    return f"{CallBackPrefix.CALLBACK}{auto_value()}"
 
 
 def get_callback_payload(call: CallbackQuery) -> Optional[str]:
