@@ -1,6 +1,17 @@
-# asynctelebot_template
- Template for asynchronous implementation of telebot.
- 
- You are welcome to make pull requests or open issues to improve template.
- 
- Note that this template requires pyTelegramBotAPI version higher or equal to 4.4.0. You can install it from github because it is not released yet.
+# Bot app
+
+A bot app base on telebot lib.
+
+## Requirements
+
+Python 3.12
+
+## Getting Started
+
+1. ```python -m venv .venv``` (if it does not exist or is incompatible)
+2. ```./.venv/Scripts/activate```
+3. ```pip install -r .\requirements.txt```
+4. *Up your redis*
+5. *Configure the .env file*
+6. ```cd src```
+7. ```py bot.py```
