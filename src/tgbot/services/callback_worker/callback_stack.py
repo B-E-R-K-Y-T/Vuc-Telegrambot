@@ -111,24 +111,24 @@ class StackStrider:
         function_image: Optional[tuple] = self.__stack.get_previous_function_image(chat_id, message_id)
 
         if function_image is not None:
-            func, _, _, _, _ = self.unpack_func_image(function_image)
+            func, _, _, _, _ = self.__unpack_func_image(function_image)
             self.__collector.listen_call(func)
 
         if function_image is None:
             raise FunctionCallStackEmpty
 
-        func, metadata, bot, args, kwargs = self.unpack_func_image(function_image)
+        func, metadata, bot, args, kwargs = self.__unpack_func_image(function_image)
         result_metadata = await sync_async_call(func, metadata, bot, *args, **kwargs)
 
         if len(self.__stack.get_stack()[chat_id][message_id]) == 1:
-            func, _, bot, args, kwargs = self.unpack_func_image(function_image)
+            func, _, bot, args, kwargs = self.__unpack_func_image(function_image)
             self.__stack.clear_message_stack(chat_id, message_id)
             self.__stack.add(func, result_metadata, bot, args, kwargs)
 
             raise AchievedStackRoot
 
     @staticmethod
-    def unpack_func_image(function_image: tuple) -> tuple:
+    def __unpack_func_image(function_image: tuple) -> tuple:
         if len(function_image) == 3:
             return *function_image, (), {}
         elif len(function_image) == 4 and isinstance(function_image[3], tuple):

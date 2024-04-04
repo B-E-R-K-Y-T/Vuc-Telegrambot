@@ -1,10 +1,12 @@
 from http import HTTPStatus
 from typing import Optional
 
+from aiohttp import web
 from aiohttp.abc import Request
 from aiohttp.web import Response
 
 from config import app_settings
+from logger import LOGGER
 from tgbot.services.api_worker.server import HttpServer
 from tgbot.services.tasks.auth import authenticate
 from tgbot.services.tasks.handlers import handlers_collector
@@ -20,7 +22,7 @@ task_server = HttpServer(
 @authenticate
 async def task_waiter(request: Request):
     data = await request.json()
-    status_task: Optional[StatusTask] = None
+    status_task: Optional[dict] = None
 
     if data["type"] == TaskTypes.SEND_USER_MESSAGE:
         status_task = await handlers_collector.start(
@@ -28,8 +30,19 @@ async def task_waiter(request: Request):
             telegram_id=data["telegram_id"],
             message=data["message"]
         )
+    elif data["type"] == TaskTypes.SEND_PLATOON_MESSAGE:
+        status_task = await handlers_collector.start(
+            TaskTypes.SEND_PLATOON_MESSAGE,
+            users_tg=data["users_tg"],
+            message=data["message"]
+        )
 
-    if status_task == StatusTask.FINISHED:
-        return Response(status=HTTPStatus.OK)
+    if status_task is None:
+        return web.json_response({"status_task": StatusTask.ERROR, "message": "Unknown task type"})
+
+    if status_task["status_task"] == StatusTask.COMPLETED:
+        LOGGER.info(status_task)
+
+        return web.json_response(status_task)
 
     return Response(status=HTTPStatus.INTERNAL_SERVER_ERROR)

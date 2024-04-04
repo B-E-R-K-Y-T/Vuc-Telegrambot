@@ -1,10 +1,10 @@
 class TaskTypes:
     SEND_USER_MESSAGE = "send_user_message"
+    SEND_PLATOON_MESSAGE = "send_message_platoon"
 
 
 class StatusTask:
     STARTED = "STARTED"
-    FINISHED = "FINISHED"
-    CANCELLED = "CANCELLED"
     COMPLETED = "COMPLETED"
+    CANCELLED = "CANCELLED"
     ERROR = "ERROR"

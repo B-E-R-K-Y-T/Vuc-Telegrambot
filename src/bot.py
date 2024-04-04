@@ -36,7 +36,7 @@ from tgbot.handlers.start import start_command_handler
 from tgbot.middlewares.antiflood_middleware import AntiFloodMiddleware
 from tgbot.services.commands import CommandSequence
 from tgbot.services.outline_text_buttons import OutlineKeyboardButton
-from tgbot.services.tasks.task_collector import HandlerTaskCollector
+from tgbot.services.tasks.handler_collector import HandlersTaskCollector
 from tgbot.services.tasks.worker import task_server
 from tgbot.states.attend import PositiveAttend, NegativeAttend
 from tgbot.states.login import Login
@@ -152,7 +152,7 @@ async def main():
     init_middlewares()
     init_filters()
 
-    HandlerTaskCollector.add_runner(bot)
+    HandlersTaskCollector.add_runner(bot)
 
     await asyncio.gather(bot_task(), task_server.run())
 

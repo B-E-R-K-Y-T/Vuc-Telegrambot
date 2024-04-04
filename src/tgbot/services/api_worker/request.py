@@ -1,10 +1,11 @@
 from http import HTTPStatus
 from json import JSONEncoder
+from typing import Optional
 
 import aiohttp
 
 from config import app_settings
-from exceptions import TooManyRequestsError, ClientError
+from exceptions import TooManyRequestsError
 from logger import LOGGER
 
 
@@ -19,12 +20,12 @@ class Request:
             self,
             endpoint: str,
             *,
-            data: dict | JSONEncoder = None,
-            headers: dict = None,
+            data: Optional[dict | JSONEncoder] = None,
+            headers: Optional[dict] = None,
             method: str = "",
-            cookies: dict = None,
-            params: dict = None,
-            json: dict = None,
+            cookies: Optional[dict] = None,
+            params: Optional[dict] = None,
+            json: Optional[dict] = None,
             **kwargs,
     ):
         async with aiohttp.ClientSession(headers=headers) as session:
@@ -50,10 +51,10 @@ class Request:
             self,
             endpoint: str,
             *,
-            data: dict = None,
-            headers: dict = None,
-            cookies: dict = None,
-            params: dict = None,
+            data: Optional[dict] = None,
+            headers: Optional[dict] = None,
+            cookies: Optional[dict] = None,
+            params: Optional[dict] = None,
             **kwargs,
     ):
         return await anext(
@@ -72,11 +73,11 @@ class Request:
             self,
             endpoint: str,
             *,
-            data: dict = None,
-            headers: dict = None,
-            cookies: dict = None,
-            params: dict = None,
-            json: dict = None,
+            data: Optional[dict] = None,
+            headers: Optional[dict] = None,
+            cookies: Optional[dict] = None,
+            params: Optional[dict] = None,
+            json: Optional[dict] = None,
             **kwargs,
     ):
         return await anext(
@@ -96,11 +97,11 @@ class Request:
             self,
             endpoint: str,
             *,
-            data: JSONEncoder = None,
-            headers: dict = None,
-            cookies: dict = None,
-            params: dict = None,
-            json: dict = None,
+            data: Optional[dict | JSONEncoder] = None,
+            headers: Optional[dict] = None,
+            cookies: Optional[dict] = None,
+            params: Optional[dict] = None,
+            json: Optional[dict] = None,
             **kwargs,
     ):
         return await anext(

@@ -77,7 +77,7 @@ async def handle_outline_output(message: Message, bot: AsyncTeleBot):
         if await check_login(message):
             await menu_handler(message, bot)
         else:
-            await bot.send_message(chat_id, "Ошибка.")
+            await bot.send_message(chat_id, "Ошибка доступа.", reply_markup=await create_start_outline_menu_handler())
 
     elif text == OutlineKeyboardButton.QUESTIONS:
         markup = await create_outline_menu_questions_handler()
@@ -104,6 +104,7 @@ async def handle_outline_output(message: Message, bot: AsyncTeleBot):
 
     elif text == OutlineKeyboardButton.CANCEL:
         await cancel_state(message, bot)
+
     elif text == OutlineKeyboardButton.BACK:
         if not await check_login(message):
             await bot.send_message(chat_id, "Принято!", reply_markup=await create_start_outline_menu_handler())
