@@ -17,7 +17,7 @@ from tgbot.handlers.menu.inline_menu import (
     view_squad_menu,
     view_squads_menu,
     edit_student_from_commander, mark_view_from_student_to_commander, edit_attend, set_attend_menu,
-    set_positive_attend_state, set_negative_attend_state,
+    set_positive_attend_state, set_negative_attend_state, view_platoon_menu,
 )
 from tgbot.services.api_worker.client import APIWorker
 from tgbot.services.user import User, UsersFactory, UserStates
@@ -174,3 +174,6 @@ async def callback_handler(call: CallbackQuery, bot: AsyncTeleBot):
             await set_negative_attend_state(message, bot)
         else:
             await send_temp_smile(message, bot, "❌")
+
+    elif call.data == CallBackData.PLATOON_MENU:
+        await view_platoon_menu(message, bot)

@@ -36,6 +36,12 @@ async def task_waiter(request: Request):
             users_tg=data["users_tg"],
             message=data["message"]
         )
+    elif data["type"] == TaskTypes.ANSWER_ATTEND:
+        status_task = await handlers_collector.start(
+            TaskTypes.ANSWER_ATTEND,
+            telegram_id=data["telegram_id"],
+            message=data["message"]
+        )
 
     if status_task is None:
         return web.json_response({"status_task": StatusTask.ERROR, "message": "Unknown task type"})

@@ -27,6 +27,8 @@ class CallBackPrefix:
     STUDENT = f"student{PREFIX_SEPARATOR}"
     CALLBACK = f"callback{PREFIX_SEPARATOR}"
     EDIT_STUDENT = f"edit_student{PREFIX_SEPARATOR}"
+    ATTEND_STUDENT_POSITIVE = f"attend_student_pos{PREFIX_SEPARATOR}"
+    ATTEND_STUDENT_NEGATIVE = f"attend_student_neg{PREFIX_SEPARATOR}"
 
 
 class CallBackData:

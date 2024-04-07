@@ -3,6 +3,8 @@ from typing import Optional
 from telebot.async_telebot import AsyncTeleBot
 
 from logger import LOGGER
+from tgbot.keybords.base_keyboard import BaseKeyboard
+from tgbot.services.callback_worker.callback_data import CallBackPrefix
 from tgbot.services.tasks.handler_collector import HandlersTaskCollector
 from tgbot.services.tasks.types import TaskTypes, StatusTask
 
@@ -12,6 +14,28 @@ handlers_collector = HandlersTaskCollector()
 @handlers_collector.add_handler(TaskTypes.SEND_USER_MESSAGE)
 async def send_message_user(bot: AsyncTeleBot, telegram_id: int, message: str):
     message = await bot.send_message(telegram_id, message)
+
+    return {
+        "status_task": StatusTask.COMPLETED,
+        "message_id": message.message_id,
+        "chat_id": message.chat.id,
+        "text": message.text
+    }
+
+
+@handlers_collector.add_handler(TaskTypes.ANSWER_ATTEND)
+async def send_message_user_answer_attend(bot: AsyncTeleBot, telegram_id: int, message: str):
+    buttons = {
+        "Да": f"{CallBackPrefix.ATTEND_STUDENT_POSITIVE}{telegram_id}",
+        "Нет": f"{CallBackPrefix.ATTEND_STUDENT_NEGATIVE}{telegram_id}",
+    }
+    keyboard = BaseKeyboard(
+        buttons,
+        reopen_menu_button_on=False,
+        back_button_on=False
+    )
+
+    message = await bot.send_message(telegram_id, message, reply_markup=keyboard.menu())
 
     return {
         "status_task": StatusTask.COMPLETED,

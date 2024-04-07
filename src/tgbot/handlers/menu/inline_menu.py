@@ -8,6 +8,7 @@ from tgbot.handlers.self import personal_info
 from tgbot.keybords.edit_attend import EditAttend
 from tgbot.keybords.edit_student import EditStudent
 from tgbot.keybords.personal_data import PersonalDataButtons
+from tgbot.keybords.platoon_menu_settings import PlatoonSettingsMenu
 from tgbot.keybords.set_attend import SetAttend
 from tgbot.keybords.squad import Squad
 from tgbot.keybords.squads import Squads
@@ -56,6 +57,13 @@ async def view_squads_menu(message: Message, bot: AsyncTeleBot, user: User):
 
     user.clear_state()
     await edit_menu(message, bot, "Меню командира отделения", keyboard)
+
+
+@stack_builder.listen_call
+async def view_platoon_menu(message: Message, bot: AsyncTeleBot):
+    keyboard = PlatoonSettingsMenu().menu()
+
+    await edit_menu(message, bot, "Меню командира взвода", keyboard)
 
 
 @stack_builder.listen_call
