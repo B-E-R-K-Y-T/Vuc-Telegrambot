@@ -1,6 +1,7 @@
 from typing import Optional
 
 from telebot.async_telebot import AsyncTeleBot
+from telebot.asyncio_helper import ApiTelegramException
 
 from logger import LOGGER
 from tgbot.keybords.base_keyboard import BaseKeyboard
@@ -26,8 +27,8 @@ async def send_message_user(bot: AsyncTeleBot, telegram_id: int, message: str):
 @handlers_collector.add_handler(TaskTypes.ANSWER_ATTEND)
 async def send_message_user_answer_attend(bot: AsyncTeleBot, telegram_id: int, message: str):
     buttons = {
-        "Да": f"{CallBackPrefix.ATTEND_STUDENT_POSITIVE}{telegram_id}",
-        "Нет": f"{CallBackPrefix.ATTEND_STUDENT_NEGATIVE}{telegram_id}",
+        "Да": CallBackPrefix.ATTEND_STUDENT_POSITIVE,
+        "Нет": CallBackPrefix.ATTEND_STUDENT_NEGATIVE,
     }
     keyboard = BaseKeyboard(
         buttons,
@@ -35,7 +36,14 @@ async def send_message_user_answer_attend(bot: AsyncTeleBot, telegram_id: int, m
         back_button_on=False
     )
 
-    message = await bot.send_message(telegram_id, message, reply_markup=keyboard.menu())
+    try:
+        message = await bot.send_message(telegram_id, message, reply_markup=keyboard.menu())
+    except ApiTelegramException as e:
+        return {
+            "status_task": StatusTask.ERROR,
+            "telegram_id": telegram_id,
+            "detail": str(e)
+        }
 
     return {
         "status_task": StatusTask.COMPLETED,

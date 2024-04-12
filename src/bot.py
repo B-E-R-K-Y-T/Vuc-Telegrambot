@@ -37,7 +37,7 @@ from tgbot.middlewares.antiflood_middleware import AntiFloodMiddleware
 from tgbot.services.commands import CommandSequence
 from tgbot.services.outline_text_buttons import OutlineKeyboardButton
 from tgbot.services.tasks.handler_collector import HandlersTaskCollector
-from tgbot.services.tasks.worker import task_server
+from tgbot.services.tasks.dispatcher import task_server
 from tgbot.states.attend import PositiveAttend, NegativeAttend
 from tgbot.states.login import Login
 from tgbot.states.setter_states import SetName, SetDob, SetGroupStudy, SetPhone, SetAddress, SetEmail, SetDos, \

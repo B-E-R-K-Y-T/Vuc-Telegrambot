@@ -16,10 +16,16 @@ from tgbot.handlers.menu.inline_menu import (
     view_attend,
     view_squad_menu,
     view_squads_menu,
-    edit_student_from_commander, mark_view_from_student_to_commander, edit_attend, set_attend_menu,
-    set_positive_attend_state, set_negative_attend_state, view_platoon_menu,
+    edit_student_from_commander,
+    mark_view_from_student_to_commander,
+    edit_attend,
+    set_attend_menu,
+    set_positive_attend_state,
+    set_negative_attend_state,
+    view_platoon_menu,
 )
 from tgbot.services.api_worker.client import APIWorker
+from tgbot.services.date_tools.next_date import get_next_date
 from tgbot.services.user import User, UsersFactory, UserStates
 from tgbot.services.utils.message_tools import get_message, send_temp_smile
 from tgbot.services.callback_worker.callback_data import (
@@ -177,3 +183,19 @@ async def callback_handler(call: CallbackQuery, bot: AsyncTeleBot):
 
     elif call.data == CallBackData.PLATOON_MENU:
         await view_platoon_menu(message, bot)
+    elif call.data == CallBackPrefix.ATTEND_STUDENT_NEGATIVE:
+        r = await api.set_visit_user(
+            token=await current_user.token,
+            date_v=str(get_next_date()),
+            visiting=0,
+            user_id=await current_user.user_id
+        )
+        print(r)
+
+    elif call.data == CallBackPrefix.ATTEND_STUDENT_POSITIVE:
+        await api.set_visit_user(
+            token=await current_user.token,
+            date_v=str(get_next_date()),
+            visiting=1,
+            user_id=await current_user.user_id
+        )

@@ -20,8 +20,10 @@ task_server = HttpServer(
 
 @task_server.post(endpoint="/tasks")
 @authenticate
-async def task_waiter(request: Request):
+async def task_dispatcher(request: Request):
+    print(12)
     data = await request.json()
+    print(data)
     status_task: Optional[dict] = None
 
     if data["type"] == TaskTypes.SEND_USER_MESSAGE:
@@ -47,6 +49,11 @@ async def task_waiter(request: Request):
         return web.json_response({"status_task": StatusTask.ERROR, "message": "Unknown task type"})
 
     if status_task["status_task"] == StatusTask.COMPLETED:
+        LOGGER.info(status_task)
+
+        return web.json_response(status_task)
+
+    if status_task["status_task"] == StatusTask.ERROR:
         LOGGER.info(status_task)
 
         return web.json_response(status_task)

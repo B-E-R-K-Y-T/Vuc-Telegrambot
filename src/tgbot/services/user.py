@@ -267,11 +267,11 @@ class User:
         return self.__direction_of_study
 
     @property
-    def telegram_id(self):
+    def telegram_id(self) -> int:
         return self.__telegram_id
 
     @property
-    async def user_id(self):
+    async def user_id(self) -> int:
         if self.__user_id is None:
             if await self.token is not None:
                 self.__user_id: int = await self.api.get_id_from_email(

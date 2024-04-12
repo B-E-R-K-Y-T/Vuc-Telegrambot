@@ -18,7 +18,7 @@ _api = APIWorker()
 async def set_positive_attend(message: Message, bot: AsyncTeleBot):
     current_user: User = await UsersFactory().get_user(message)
 
-    await set_attend(message, bot, current_user, visiting=2)
+    await set_attend(message, bot, current_user, visiting=1)
     await bot.delete_state(message.chat.id, message.chat.id)
     # await bot.send_message(message.chat.id, "Успешно!")
 
@@ -27,7 +27,7 @@ async def set_positive_attend(message: Message, bot: AsyncTeleBot):
 async def set_negative_attend(message: Message, bot: AsyncTeleBot):
     current_user: User = await UsersFactory().get_user(message)
 
-    await set_attend(message, bot, current_user, visiting=1)
+    await set_attend(message, bot, current_user, visiting=0)
     await bot.delete_state(message.chat.id, message.chat.id)
     # await bot.send_message(message.chat.id, "Успешно!")
 

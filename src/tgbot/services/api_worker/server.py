@@ -1,3 +1,4 @@
+import sys
 from typing import Callable, Awaitable
 
 from aiohttp import web
@@ -23,4 +24,4 @@ class HttpServer:
 
         site = web.TCPSite(runner, self.host, self.port)
         await site.start()
-        print(f"Server started at http://{self.host}:{self.port}")
+        print(f"Server started at http://{self.host}:{self.port}", file=sys.stderr)
