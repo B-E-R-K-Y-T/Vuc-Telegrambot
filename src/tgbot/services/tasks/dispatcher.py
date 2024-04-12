@@ -1,12 +1,9 @@
-from http import HTTPStatus
 from typing import Optional
 
 from aiohttp import web
 from aiohttp.abc import Request
-from aiohttp.web import Response
 
 from config import app_settings
-from logger import LOGGER
 from tgbot.services.api_worker.server import HttpServer
 from tgbot.services.tasks.auth import authenticate
 from tgbot.services.tasks.handlers import handlers_collector

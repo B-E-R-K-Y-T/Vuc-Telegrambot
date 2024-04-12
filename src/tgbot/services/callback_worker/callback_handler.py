@@ -25,7 +25,7 @@ from tgbot.handlers.menu.inline_menu import (
     view_platoon_menu,
 )
 from tgbot.services.api_worker.client import APIWorker
-from tgbot.services.date_tools.next_date import get_next_date
+from tgbot.services.date_tools.next_date import get_tomorrow_date
 from tgbot.services.user import User, UsersFactory, UserStates
 from tgbot.services.utils.message_tools import get_message, send_temp_smile
 from tgbot.services.callback_worker.callback_data import (
@@ -186,7 +186,7 @@ async def callback_handler(call: CallbackQuery, bot: AsyncTeleBot):
     elif call.data == CallBackPrefix.ATTEND_STUDENT_NEGATIVE:
         r = await api.set_visit_user(
             token=await current_user.token,
-            date_v=str(get_next_date()),
+            date_v=str(get_tomorrow_date()),
             visiting=0,
             user_id=await current_user.user_id
         )
@@ -195,7 +195,7 @@ async def callback_handler(call: CallbackQuery, bot: AsyncTeleBot):
     elif call.data == CallBackPrefix.ATTEND_STUDENT_POSITIVE:
         await api.set_visit_user(
             token=await current_user.token,
-            date_v=str(get_next_date()),
+            date_v=str(get_tomorrow_date()),
             visiting=1,
             user_id=await current_user.user_id
         )

@@ -1,8 +1,8 @@
 from datetime import date, timedelta
 
 
-def get_next_date(days=1):
+def get_tomorrow_date(days=1):
     today = date.today()
-    next_date = today + timedelta(days=days)
+    tomorrow_date = today + timedelta(days=days)
 
-    return next_date
+    return tomorrow_date
