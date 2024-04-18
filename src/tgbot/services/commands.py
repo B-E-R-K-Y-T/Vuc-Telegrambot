@@ -29,3 +29,4 @@ class CommandSequence(Commands):
     MENU: Command = "menu"
     SELF: Command = "self"
     HELP: Command = "help"
+    REG: Command = "reg"
