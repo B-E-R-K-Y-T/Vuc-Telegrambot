@@ -27,7 +27,8 @@ class AntiFloodMiddleware(BaseMiddleware):
     async def __send_ban_message(self, message: Message, timeout: int):
         await self.bot.send_message(
             message.chat.id,
-            f"Вы отправляете запросы слишком часто. " f"Подождите {timeout} секунд.",
+            f"Вы отправляете запросы слишком часто. " 
+            f"Подождите {timeout} секунд.",
         )
         return CancelUpdate()
 

@@ -310,4 +310,6 @@ class APIWorker:
         return await resp.json()
 
 
-__all__ = (APIWorker.__name__,)
+__all__ = (
+    APIWorker.__name__,
+)
