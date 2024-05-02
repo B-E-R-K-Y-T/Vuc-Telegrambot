@@ -78,7 +78,7 @@ async def callback_handler(call: CallbackQuery, bot: AsyncTeleBot):
             await bot.send_message(
                 message.chat.id,
                 f"История пуста. Попробуйте открыть меню ещё раз.",
-                reply_markup=markup_refresh
+                reply_markup=markup_refresh,
             )
 
     elif call.data == CallBackData.REOPEN_MENU:
@@ -94,16 +94,25 @@ async def callback_handler(call: CallbackQuery, bot: AsyncTeleBot):
         await semesters_menu(message, bot, current_user)
 
     elif call.data == CallBackData.MARK_VIEW_FROM_STUDENT_TO_COMMANDER:
-        await mark_view_from_student_to_commander(message, bot, current_user.selectable_user)
+        await mark_view_from_student_to_commander(
+            message, bot, current_user.selectable_user
+        )
 
     elif call.data == CallBackData.PERSONAL_DATA:
         await send_personal_info(message, bot)
 
     elif call.data in semesters_map:
         if current_user.state == UserStates.WORK_SELECTED_USER:
-            await send_marks(message, bot, current_user.selectable_user, semester=semesters_map[call.data])
+            await send_marks(
+                message,
+                bot,
+                current_user.selectable_user,
+                semester=semesters_map[call.data],
+            )
         else:
-            await send_marks(message, bot, current_user, semester=semesters_map[call.data])
+            await send_marks(
+                message, bot, current_user, semester=semesters_map[call.data]
+            )
 
     elif call.data == CallBackData.EDIT_PERSONAL_DATA:
         await personal_menu(message, bot)
@@ -188,7 +197,7 @@ async def callback_handler(call: CallbackQuery, bot: AsyncTeleBot):
             token=await current_user.token,
             date_v=str(get_tomorrow_date()),
             visiting=0,
-            user_id=await current_user.user_id
+            user_id=await current_user.user_id,
         )
         print(r)
 
@@ -197,5 +206,5 @@ async def callback_handler(call: CallbackQuery, bot: AsyncTeleBot):
             token=await current_user.token,
             date_v=str(get_tomorrow_date()),
             visiting=1,
-            user_id=await current_user.user_id
+            user_id=await current_user.user_id,
         )

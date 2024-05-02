@@ -43,7 +43,8 @@ class AntiFloodMiddleware(BaseMiddleware):
             if message.date - user_message.message_deque[-1].date < self.timeout:
                 return await self.__send_ban_message(
                     message=message,
-                    timeout=self.timeout - (message.date - user_message.message_deque[-1].date),
+                    timeout=self.timeout
+                    - (message.date - user_message.message_deque[-1].date),
                 )
             else:
                 user_message.is_ban = False

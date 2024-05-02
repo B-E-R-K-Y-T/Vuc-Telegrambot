@@ -21,6 +21,4 @@ class LimitedDict(OrderedDict):
         super(LimitedDict, self).setdefault(key, default)
 
 
-__all__ = (
-    LimitedDict.__name__,
-)
+__all__ = (LimitedDict.__name__,)

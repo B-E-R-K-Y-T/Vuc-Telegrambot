@@ -16,7 +16,8 @@ class PersonalDataButtons(BaseKeyboard):
                 TextButton.DOS: CallBackData.DOS,
                 TextButton.GROUP_STUDY: CallBackData.GROUP_STUDY,
             },
-            *args, **kwargs
+            *args,
+            **kwargs
         )
 
     def menu(self, new_buttons: Optional[dict] = None):

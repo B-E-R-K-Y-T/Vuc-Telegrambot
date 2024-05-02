@@ -18,19 +18,21 @@ def get_message(metadata: Message | CallbackQuery) -> Message:
         raise TypeError
 
 
-async def send_temp_smile(message: Message, bot: AsyncTeleBot, smile: str, lifetime_smile: float = 2.5):
+async def send_temp_smile(
+    message: Message, bot: AsyncTeleBot, smile: str, lifetime_smile: float = 2.5
+):
     msg = await bot.send_message(message.chat.id, smile)
     await asyncio.sleep(lifetime_smile)
     await bot.delete_message(message.chat.id, msg.message_id)
 
 
 def send_status_task_smile(
-        *,
-        send_success_status_smile: bool = True,
-        lifetime_smile: float = 2.5,
-        success_smile: str = "✅",
-        failed_smile: str = "❌",
-        waiting_smile: str = "⏳",
+    *,
+    send_success_status_smile: bool = True,
+    lifetime_smile: float = 2.5,
+    success_smile: str = "✅",
+    failed_smile: str = "❌",
+    waiting_smile: str = "⏳",
 ):
     """
     Требует, чтобы у обернутой функции были аргументы:
@@ -44,10 +46,15 @@ def send_status_task_smile(
     def decorator(func: Callable | Awaitable) -> Callable | Awaitable:
         @wraps(func)
         async def wrapper(
-                metadata: Message | CallbackQuery, bot: AsyncTeleBot, *args: Any, **kwargs: Any
+            metadata: Message | CallbackQuery,
+            bot: AsyncTeleBot,
+            *args: Any,
+            **kwargs: Any,
         ) -> Any:
             message: Message = get_message(metadata)
-            msg_process: Message = await bot.send_message(message.chat.id, waiting_smile)
+            msg_process: Message = await bot.send_message(
+                message.chat.id, waiting_smile
+            )
 
             try:
                 if asyncio.iscoroutinefunction(func):
@@ -57,10 +64,14 @@ def send_status_task_smile(
             except Exception as e:
                 LOGGER.error(str(e))
 
-                await bot.edit_message_text(failed_smile, message.chat.id, msg_process.message_id)
+                await bot.edit_message_text(
+                    failed_smile, message.chat.id, msg_process.message_id
+                )
             else:
                 if send_success_status_smile:
-                    await bot.edit_message_text(success_smile, message.chat.id, msg_process.message_id)
+                    await bot.edit_message_text(
+                        success_smile, message.chat.id, msg_process.message_id
+                    )
                 return res
             finally:
                 await asyncio.sleep(lifetime_smile)

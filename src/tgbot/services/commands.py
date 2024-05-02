@@ -18,7 +18,7 @@ class Commands(CollectorField):
     def fields(cls):
         commands = super().fields()
 
-        return [f'/{cmd}' for cmd in commands]
+        return [f"/{cmd}" for cmd in commands]
 
 
 class CommandSequence(Commands):

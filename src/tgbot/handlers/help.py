@@ -18,33 +18,33 @@ async def cmd_help(message: Message, bot: AsyncTeleBot):
         await bot.send_message(
             chat_id,
             f"Чтобы пользоваться ботом. Введите команду /{CommandSequence.LOGIN} "
-            f"или нажмите на кнопку \"{OutlineKeyboardButton.LOGIN}\" либо пройдите регистрацию:"
+            f'или нажмите на кнопку "{OutlineKeyboardButton.LOGIN}" либо пройдите регистрацию:'
             f"/{CommandSequence.REG} ",
         )
     elif await user.role == Roles.student:
         await bot.send_message(
             chat_id,
-            f"Откройте меню, чтобы пользоваться ботом: /{CommandSequence.LOGIN} ",
+            f"Откройте меню, чтобы пользоваться ботом: /{CommandSequence.MENU} ",
         )
     elif await user.role == Roles.squad_commander:
         await bot.send_message(
             chat_id,
-            f"Откройте меню, чтобы пользоваться ботом: /{CommandSequence.LOGIN} "
+            f"Откройте меню, чтобы пользоваться ботом: /{CommandSequence.MENU} ",
         )
     elif await user.role == Roles.platoon_commander:
         await bot.send_message(
             chat_id,
-            f"Откройте меню, чтобы пользоваться ботом: /{CommandSequence.LOGIN} "
+            f"Откройте меню, чтобы пользоваться ботом: /{CommandSequence.MENU} ",
         )
     elif await user.role == Roles.professor:
         await bot.send_message(
             chat_id,
-            f"Откройте меню, чтобы пользоваться ботом: /{CommandSequence.LOGIN} "
+            f"Откройте меню, чтобы пользоваться ботом: /{CommandSequence.MENU} ",
         )
     elif await user.role == Roles.admin:
         await bot.send_message(
             chat_id,
-            f"Откройте меню, чтобы пользоваться ботом: /{CommandSequence.LOGIN} "
+            f"Откройте меню, чтобы пользоваться ботом: /{CommandSequence.MENU} ",
         )
     else:
         raise BackgroundTaskError

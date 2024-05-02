@@ -12,7 +12,7 @@ def authenticate(func: Callable | Awaitable):
     @wraps(func)
     async def wrapper(request: Request, *args, **kwargs):
         json_data = await request.json()
-        auth_token = json_data.get('auth_token')
+        auth_token = json_data.get("auth_token")
 
         if auth_token == app_settings.TOKEN:
             return await sync_async_call(func, request, *args, **kwargs)

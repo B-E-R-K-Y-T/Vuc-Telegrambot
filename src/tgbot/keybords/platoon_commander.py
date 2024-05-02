@@ -12,7 +12,8 @@ class PlatoonCommander(BaseKeyboard):
                 TextButton.SQUADS_MENU: CallBackData.VIEW_SQUADS_MENU,
                 TextButton.STUDENT_MENU: CallBackData.STUDENT_MENU,
             },
-            *args, **kwargs
+            *args,
+            **kwargs
         )
 
     def menu(self, new_buttons: Optional[dict] = None):

@@ -11,7 +11,8 @@ class EditAttend(BaseKeyboard):
                 TextButton.VIEW_ATTEND: CallBackData.ATTEND_VIEW_FROM_COMMANDER,
                 TextButton.EDIT_ATTEND: CallBackData.SET_ATTEND,
             },
-            *args, **kwargs
+            *args,
+            **kwargs
         )
 
     def menu(self, new_buttons: Optional[dict] = None):

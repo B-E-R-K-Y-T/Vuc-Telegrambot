@@ -11,7 +11,8 @@ class SetAttend(BaseKeyboard):
                 TextButton.POSITIVE_ATTEND: CallBackData.SET_POSITIVE_ATTEND,
                 TextButton.NEGATIVE_ATTEND: CallBackData.SET_NEGATIVE_ATTEND,
             },
-            *args, **kwargs
+            *args,
+            **kwargs
         )
 
     def menu(self, new_buttons: Optional[dict] = None):

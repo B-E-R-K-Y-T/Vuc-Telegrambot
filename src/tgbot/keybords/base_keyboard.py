@@ -32,10 +32,10 @@ class TextButton:
 
 class BaseKeyboard:
     def __init__(
-            self,
-            buttons: Optional[dict] = None,
-            reopen_menu_button_on: bool = True,
-            back_button_on: bool = True
+        self,
+        buttons: Optional[dict] = None,
+        reopen_menu_button_on: bool = True,
+        back_button_on: bool = True,
     ):
         if buttons is None:
             self.buttons: dict = {}
@@ -57,10 +57,18 @@ class BaseKeyboard:
         move_buttons = []
 
         if self.back_button_on:
-            move_buttons.append(InlineKeyboardButton(text=TextButton.BACK, callback_data=CallBackData.BACK))
+            move_buttons.append(
+                InlineKeyboardButton(
+                    text=TextButton.BACK, callback_data=CallBackData.BACK
+                )
+            )
 
         if self.reopen_menu_button_on:
-            move_buttons.append(InlineKeyboardButton(text=TextButton.REOPEN, callback_data=CallBackData.REOPEN_MENU))
+            move_buttons.append(
+                InlineKeyboardButton(
+                    text=TextButton.REOPEN, callback_data=CallBackData.REOPEN_MENU
+                )
+            )
 
         if move_buttons:
             keyboard.add(*move_buttons)

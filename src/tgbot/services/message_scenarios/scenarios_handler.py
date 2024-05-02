@@ -46,7 +46,9 @@ class Photo:
     def photo(self) -> BinaryIO:
         return open(
             f"{os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))}"
-            f"/data/message_scenario_photo/{self.__path}", "rb")
+            f"/data/message_scenario_photo/{self.__path}",
+            "rb",
+        )
 
 
 async def run_scenario(message: Message, bot: AsyncTeleBot, scenario: tuple):

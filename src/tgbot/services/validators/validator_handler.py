@@ -6,8 +6,8 @@ from typing_extensions import Awaitable
 
 
 def bind_validator(
-        validator: Callable | Awaitable,
-        msg_err: str = "Ошибка. Текст не прошел валидацию, попробуйте ещё раз."
+    validator: Callable | Awaitable,
+    msg_err: str = "Ошибка. Текст не прошел валидацию, попробуйте ещё раз.",
 ) -> Callable:
     def decorator(func: Callable | Awaitable) -> Callable | Awaitable:
         @wraps(func)

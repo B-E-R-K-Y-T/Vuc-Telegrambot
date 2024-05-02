@@ -22,23 +22,23 @@ class UserStates:
 
 class User:
     def __init__(
-            self,
-            telegram_id: int,
-            email: Optional[str] = None,
-            password: Optional[str] = None,
-            user_id: Optional[int] = None,
-            date_of_birth: Optional[str] = None,
-            phone: Optional[str] = None,
-            address: Optional[str] = None,
-            institute: Optional[str] = None,
-            direction_of_study: Optional[str] = None,
-            group_study: Optional[str] = None,
-            platoon_number: Optional[int] = None,
-            squad_number: Optional[int] = None,
-            role: Optional[str] = None,
-            name: Optional[str] = None,
-            token: Optional[str] = None,
-            is_child: bool = False,
+        self,
+        telegram_id: int,
+        email: Optional[str] = None,
+        password: Optional[str] = None,
+        user_id: Optional[int] = None,
+        date_of_birth: Optional[str] = None,
+        phone: Optional[str] = None,
+        address: Optional[str] = None,
+        institute: Optional[str] = None,
+        direction_of_study: Optional[str] = None,
+        group_study: Optional[str] = None,
+        platoon_number: Optional[int] = None,
+        squad_number: Optional[int] = None,
+        role: Optional[str] = None,
+        name: Optional[str] = None,
+        token: Optional[str] = None,
+        is_child: bool = False,
     ):
         self.db = Database()
         self.api = APIWorker()
@@ -74,9 +74,9 @@ class User:
         if self.__token is not None:
             self.__user_id = await self.user_id
             user = await self.api.get_user_data(self.__token, self.__user_id)
-            tmp_date = str(user.get("date_of_birth")).split('T')[0]
+            tmp_date = str(user.get("date_of_birth")).split("T")[0]
 
-            year, month, day = [int(item) for item in tmp_date.split('-')]
+            year, month, day = [int(item) for item in tmp_date.split("-")]
 
             self.__date_of_birth: Optional[date] = date(year, month, day)
             self.__phone: Optional[str] = user.get("phone")
@@ -127,15 +127,12 @@ class User:
 
             if await self.role == Roles.squad_commander:
                 _subordinates = await self.api.get_students_by_squad(
-                    await self.token,
-                    await self.platoon_number,
-                    await self.squad_number
+                    await self.token, await self.platoon_number, await self.squad_number
                 )
             elif await self.role == Roles.platoon_commander:
                 _subordinates = (
                     await self.api.get_platoon(
-                        await self.token,
-                        await self.platoon_number
+                        await self.token, await self.platoon_number
                     )
                 )["students"]
 
@@ -145,7 +142,10 @@ class User:
                         continue
 
                 elif await self.role == Roles.platoon_commander:
-                    if subordinate["role"] not in [Roles.student, Roles.squad_commander]:
+                    if subordinate["role"] not in [
+                        Roles.student,
+                        Roles.squad_commander,
+                    ]:
                         continue
 
                 user_id = subordinate.pop("id")
@@ -172,7 +172,9 @@ class User:
             return date_, jwt, email
 
     async def get_marks(self, semester: int) -> list[dict]:
-        marks = await self.api.get_marks_by_semester(await self.token, await self.user_id, semester)
+        marks = await self.api.get_marks_by_semester(
+            await self.token, await self.user_id, semester
+        )
         res = []
 
         for mark in marks.values():
@@ -189,7 +191,9 @@ class User:
     @property
     async def semesters(self):
         if self.__semesters is None:
-            self.__semesters = await self.api.get_semesters(await self.token, await self.user_id)
+            self.__semesters = await self.api.get_semesters(
+                await self.token, await self.user_id
+            )
 
         return self.__semesters
 
@@ -216,43 +220,53 @@ class User:
     @property
     async def platoon_number(self):
         if self.__platoon_number is None:
-            self.__platoon_number = await self.api.get_platoon_number(await self.token, await self.user_id)
+            self.__platoon_number = await self.api.get_platoon_number(
+                await self.token, await self.user_id
+            )
 
         return self.__platoon_number
 
     @property
     async def name(self):
         if self.__name is None:
-            self.__name = await self.api.get_user_name(await self.token, await self.user_id)
+            self.__name = await self.api.get_user_name(
+                await self.token, await self.user_id
+            )
 
         return self.__name
 
     @property
     async def squad_number(self):
         if self.__squad_number is None:
-            self.__squad_number = await self.api.get_squad_user(await self.token, await self.user_id)
+            self.__squad_number = await self.api.get_squad_user(
+                await self.token, await self.user_id
+            )
 
         return self.__squad_number
 
     @property
     async def group_study(self):
         if self.__group_study is None:
-            self.__group_study = await self.api.get_user_group_study(await self.token, await self.user_id)
+            self.__group_study = await self.api.get_user_group_study(
+                await self.token, await self.user_id
+            )
 
         return self.__group_study
 
     @property
     async def address(self):
         if self.__address is None:
-            self.__address = await self.api.get_user_address(await self.token, await self.user_id)
+            self.__address = await self.api.get_user_address(
+                await self.token, await self.user_id
+            )
 
         return self.__address
 
     @property
     async def count_squad_in_platoon(self):
         self.__count_squad_in_platoon = await self.api.get_count_squad_in_platoon(
-            await self.token,
-            await self.platoon_number)
+            await self.token, await self.platoon_number
+        )
 
         return self.__count_squad_in_platoon
 
@@ -260,8 +274,7 @@ class User:
     async def direction_of_study(self):
         if self.__direction_of_study is None:
             self.__direction_of_study = await self.api.get_user_direction_of_study(
-                await self.token,
-                await self.user_id
+                await self.token, await self.user_id
             )
 
         return self.__direction_of_study
@@ -283,7 +296,9 @@ class User:
     @property
     async def role(self) -> str:
         if self.__role is None:
-            self.__role: str = await self.api.get_user_role(await self.token, await self.user_id)
+            self.__role: str = await self.api.get_user_role(
+                await self.token, await self.user_id
+            )
 
         return self.__role
 

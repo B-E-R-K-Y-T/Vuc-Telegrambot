@@ -35,7 +35,4 @@ class HandlersTaskCollector:
             return await sync_async_call(func, self.__runner, **kwargs)
         except Exception as e:
             LOGGER.error(str(e))
-            return {
-                "status_task": StatusTask.ERROR,
-                "detail": str(e)
-            }
+            return {"status_task": StatusTask.ERROR, "detail": str(e)}

@@ -24,6 +24,7 @@ class BackgroundTaskError(MainVucException):
     """
     Использовать только в сочетании с декоратором @send_status_task_smile()
     """
+
     pass
 
 

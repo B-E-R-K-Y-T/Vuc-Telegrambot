@@ -11,5 +11,5 @@ async def start_command_handler(message: Message, bot: AsyncTeleBot):
         message.chat.id,
         f"Приветствую Вас.\n\n"
         f"Чтобы войти, используйте команду: /{CommandSequence.LOGIN}",
-        reply_markup=markup
+        reply_markup=markup,
     )

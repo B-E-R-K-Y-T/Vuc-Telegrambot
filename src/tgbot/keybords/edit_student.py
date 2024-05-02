@@ -11,7 +11,8 @@ class EditStudent(BaseKeyboard):
                 TextButton.MARKS: CallBackData.MARK_VIEW_FROM_STUDENT_TO_COMMANDER,
                 TextButton.ATTEND: CallBackData.EDIT_ATTEND_OF_STUDENT,
             },
-            *args, **kwargs
+            *args,
+            **kwargs
         )
 
     def menu(self, new_buttons: Optional[dict] = None):

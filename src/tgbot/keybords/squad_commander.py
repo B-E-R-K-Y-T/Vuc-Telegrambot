@@ -6,9 +6,7 @@ from tgbot.services.callback_worker.callback_data import CallBackData
 
 class SquadCommander(BaseKeyboard):
     def __init__(self, *args, **kwargs):
-        super().__init__(
-            *args, **kwargs
-        )
+        super().__init__(*args, **kwargs)
         self.buttons = {
             TextButton.SQUADS_MENU: CallBackData.SQUAD_MENU,
             TextButton.STUDENT_MENU: CallBackData.STUDENT_MENU,

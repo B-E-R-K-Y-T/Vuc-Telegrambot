@@ -123,7 +123,9 @@ class APIWorker:
         if resp.status == HTTPStatus.OK.value:
             return await resp.json()
 
-    async def get_marks_by_semester(self, token: str, user_id: int, semester: int) -> dict:
+    async def get_marks_by_semester(
+        self, token: str, user_id: int, semester: int
+    ) -> dict:
         resp = await self.request.get(
             "/users/get_marks_by_semester",
             headers=self.headers,
@@ -134,7 +136,9 @@ class APIWorker:
         if resp.status == HTTPStatus.OK.value:
             return dict(await resp.json())
 
-    async def get_students_by_squad(self, token: str, platoon_number: int, squad_number: int) -> dict:
+    async def get_students_by_squad(
+        self, token: str, platoon_number: int, squad_number: int
+    ) -> dict:
         resp = await self.request.get(
             "/squad/get_students_by_squad",
             headers=self.headers,
@@ -281,7 +285,9 @@ class APIWorker:
 
         return resp
 
-    async def confirmation_attend_user(self, token: str, attend_id: int, confirmed: bool = False) -> str:
+    async def confirmation_attend_user(
+        self, token: str, attend_id: int, confirmed: bool = False
+    ) -> str:
         resp = await self.request.patch(
             "/attends/confirmation_attend_user",
             headers=self.headers,
@@ -291,7 +297,9 @@ class APIWorker:
 
         return resp
 
-    async def set_visit_user(self, token: str, date_v: str, visiting: int, user_id: int) -> int:
+    async def set_visit_user(
+        self, token: str, date_v: str, visiting: int, user_id: int
+    ) -> int:
         resp = await self.request.post(
             "/professor/set_visit_user",
             headers=self.headers,
@@ -302,6 +310,4 @@ class APIWorker:
         return await resp.json()
 
 
-__all__ = (
-    APIWorker.__name__,
-)
+__all__ = (APIWorker.__name__,)

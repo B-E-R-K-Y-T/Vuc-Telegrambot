@@ -13,7 +13,8 @@ class Student(BaseKeyboard):
                 TextButton.PERSONAL_DATA: CallBackData.PERSONAL_DATA,
                 TextButton.EDIT_PERSONAL_DATA: CallBackData.EDIT_PERSONAL_DATA,
             },
-            *args, **kwargs
+            *args,
+            **kwargs
         )
 
     def menu(self, new_buttons: Optional[dict] = None):

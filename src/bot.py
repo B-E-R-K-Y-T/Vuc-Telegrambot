@@ -16,6 +16,7 @@ from tgbot.handlers.login import (
     login_handler_email,
     login_handler_password,
 )
+from tgbot.handlers.registration import reg_command_handler
 from tgbot.handlers.set_attend import set_positive_attend, set_negative_attend
 from tgbot.handlers.setters_pd import (
     set_dos,
@@ -40,8 +41,16 @@ from tgbot.services.tasks.handler_collector import HandlersTaskCollector
 from tgbot.services.tasks.dispatcher import task_server
 from tgbot.states.attend import PositiveAttend, NegativeAttend
 from tgbot.states.login import Login
-from tgbot.states.setter_states import SetName, SetDob, SetGroupStudy, SetPhone, SetAddress, SetEmail, SetDos, \
-    SetInstitute
+from tgbot.states.setter_states import (
+    SetName,
+    SetDob,
+    SetGroupStudy,
+    SetPhone,
+    SetAddress,
+    SetEmail,
+    SetDos,
+    SetInstitute,
+)
 
 bot = AsyncTeleBot(
     app_settings.TOKEN,
@@ -61,11 +70,16 @@ def init_handlers():
         start_command_handler, commands=[CommandSequence.START], pass_bot=True
     )
     bot.register_message_handler(
+        reg_command_handler, commands=[CommandSequence.REG], pass_bot=True
+    )
+    bot.register_message_handler(
         cmd_help, commands=[CommandSequence.HELP], pass_bot=True
     )
 
     bot.register_message_handler(
-        handle_outline_output, func=lambda msg: msg.text in OutlineKeyboardButton.fields(), pass_bot=True
+        handle_outline_output,
+        func=lambda msg: msg.text in OutlineKeyboardButton.fields(),
+        pass_bot=True,
     )
 
     init_base_filters(personal_info, commands=[CommandSequence.SELF], pass_bot=True)

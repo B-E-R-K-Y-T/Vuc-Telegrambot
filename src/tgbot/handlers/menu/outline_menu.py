@@ -12,7 +12,9 @@ from tgbot.services.user import UsersFactory
 
 
 async def create_start_outline_menu_handler() -> ReplyKeyboardMarkup:
-    markup = ReplyKeyboardMarkup(row_width=3, one_time_keyboard=True, resize_keyboard=True)
+    markup = ReplyKeyboardMarkup(
+        row_width=3, one_time_keyboard=True, resize_keyboard=True
+    )
 
     buttons = (
         KeyboardButton(OutlineKeyboardButton.REGISTRATION),
@@ -27,7 +29,9 @@ async def create_start_outline_menu_handler() -> ReplyKeyboardMarkup:
 
 
 async def create_authorized_outline_menu_handler() -> ReplyKeyboardMarkup:
-    markup = ReplyKeyboardMarkup(row_width=3, one_time_keyboard=True, resize_keyboard=True)
+    markup = ReplyKeyboardMarkup(
+        row_width=3, one_time_keyboard=True, resize_keyboard=True
+    )
 
     buttons = (
         KeyboardButton(OutlineKeyboardButton.LOGOUT),
@@ -42,7 +46,9 @@ async def create_authorized_outline_menu_handler() -> ReplyKeyboardMarkup:
 
 
 async def create_outline_menu_questions_handler() -> ReplyKeyboardMarkup:
-    markup = ReplyKeyboardMarkup(row_width=2, one_time_keyboard=True, resize_keyboard=True)
+    markup = ReplyKeyboardMarkup(
+        row_width=2, one_time_keyboard=True, resize_keyboard=True
+    )
 
     buttons = (
         KeyboardButton(OutlineKeyboardButton.INFO),
@@ -77,7 +83,11 @@ async def handle_outline_output(message: Message, bot: AsyncTeleBot):
         if await check_login(message):
             await menu_handler(message, bot)
         else:
-            await bot.send_message(chat_id, "Ошибка доступа.", reply_markup=await create_start_outline_menu_handler())
+            await bot.send_message(
+                chat_id,
+                "Ошибка доступа.",
+                reply_markup=await create_start_outline_menu_handler(),
+            )
 
     elif text == OutlineKeyboardButton.QUESTIONS:
         markup = await create_outline_menu_questions_handler()
@@ -105,8 +115,23 @@ async def handle_outline_output(message: Message, bot: AsyncTeleBot):
     elif text == OutlineKeyboardButton.CANCEL:
         await cancel_state(message, bot)
 
+    elif text == OutlineKeyboardButton.REGISTRATION:
+        await bot.send_message(
+            chat_id,
+            "В настоящий момент регистрация отсутствует. "
+            "Обратитесь к администратору",
+        )
+
     elif text == OutlineKeyboardButton.BACK:
         if not await check_login(message):
-            await bot.send_message(chat_id, "Принято!", reply_markup=await create_start_outline_menu_handler())
+            await bot.send_message(
+                chat_id,
+                "Принято!",
+                reply_markup=await create_start_outline_menu_handler(),
+            )
         else:
-            await bot.send_message(chat_id, "Принято!", reply_markup=await create_authorized_outline_menu_handler())
+            await bot.send_message(
+                chat_id,
+                "Принято!",
+                reply_markup=await create_authorized_outline_menu_handler(),
+            )

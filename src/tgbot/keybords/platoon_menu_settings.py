@@ -11,7 +11,8 @@ class PlatoonSettingsMenu(BaseKeyboard):
                 TextButton.ADD_STUDENT: CallBackData.ADD_STUDENT,
                 TextButton.MOVE_STUDENT: CallBackData.MOVE_STUDENT,
             },
-            *args, **kwargs
+            *args,
+            **kwargs
         )
 
     def menu(self, new_buttons: Optional[dict] = None):

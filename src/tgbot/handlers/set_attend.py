@@ -40,10 +40,10 @@ async def set_attend(message: Message, bot: AsyncTeleBot, user: User, visiting):
         await user.token,
         f"{year}-{month}-{day}",
         visiting=visiting,
-        user_id=await user.selectable_user.user_id
+        user_id=await user.selectable_user.user_id,
     )
     await _api.confirmation_attend_user(
         await user.token,
         attend_id,
-        confirmed=True if await user.role != Roles.student else False
+        confirmed=True if await user.role != Roles.student else False,
     )
