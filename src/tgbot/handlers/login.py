@@ -65,6 +65,12 @@ async def login_handler_password(message: Message, bot: AsyncTeleBot):
         await menu_handler(message, bot)
 
     markup = await create_authorized_outline_menu_handler()
+
+    await _api.set_user_attr(
+        await user.token,
+        attrs={"id": await user.user_id, "data": {"telegram_id": usr_id}}
+    )
+
     await bot.send_message(message.chat.id, "Вы вошли в систему.", reply_markup=markup)
 
     await bot.delete_state(message.from_user.id, message.chat.id)

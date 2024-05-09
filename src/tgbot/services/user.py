@@ -1,6 +1,7 @@
 import time
 from datetime import date
 from typing import Optional, Any
+from warnings import warn
 
 from telebot.types import Message, CallbackQuery
 
@@ -22,23 +23,23 @@ class UserStates:
 
 class User:
     def __init__(
-        self,
-        telegram_id: int,
-        email: Optional[str] = None,
-        password: Optional[str] = None,
-        user_id: Optional[int] = None,
-        date_of_birth: Optional[str] = None,
-        phone: Optional[str] = None,
-        address: Optional[str] = None,
-        institute: Optional[str] = None,
-        direction_of_study: Optional[str] = None,
-        group_study: Optional[str] = None,
-        platoon_number: Optional[int] = None,
-        squad_number: Optional[int] = None,
-        role: Optional[str] = None,
-        name: Optional[str] = None,
-        token: Optional[str] = None,
-        is_child: bool = False,
+            self,
+            telegram_id: int,
+            email: Optional[str] = None,
+            password: Optional[str] = None,
+            user_id: Optional[int] = None,
+            date_of_birth: Optional[str] = None,
+            phone: Optional[str] = None,
+            address: Optional[str] = None,
+            institute: Optional[str] = None,
+            direction_of_study: Optional[str] = None,
+            group_study: Optional[str] = None,
+            platoon_number: Optional[int] = None,
+            squad_number: Optional[int] = None,
+            role: Optional[str] = None,
+            name: Optional[str] = None,
+            token: Optional[str] = None,
+            is_child: bool = False,
     ):
         self.db = Database()
         self.api = APIWorker()
@@ -92,6 +93,11 @@ class User:
         return self
 
     async def toggle_state(self, state: UserState):
+        warn(
+            "toggle_state() is deprecated.",
+            DeprecationWarning,
+            stacklevel=2
+        )
         """
         Нужно, чтобы перевести пользователя в некоторое состояние и вывести его в состояние по умолчанию, при
         обратном движении по стеку.
