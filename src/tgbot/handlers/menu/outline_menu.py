@@ -13,7 +13,7 @@ from tgbot.services.user import UsersFactory
 
 async def create_start_outline_menu_handler() -> ReplyKeyboardMarkup:
     markup = ReplyKeyboardMarkup(
-        row_width=3, one_time_keyboard=True, resize_keyboard=True
+        row_width=3, resize_keyboard=True
     )
 
     buttons = (
