@@ -174,11 +174,19 @@ async def view_attend(message: Message, bot: AsyncTeleBot, user: User):
     attends = await user.attend
     msg = f"Посещаемость студента: {await user.name}\n\n"
 
+    attend_mode = {
+        0: "не был",
+        1: "был",
+        2: "наряд",
+        3: "командировка",
+        4: "болезнь"
+    }
+
     for attend in attends:
         msg += (f"Дата: {attend["date_v"]}\n"
-                f"Присутствовал: {"Да" if attend["visiting"] == 2 else "Нет"}\n"
+                f"Заверено: {attend_mode[attend["visiting"]]}\n"
                 f"Семестр: {attend["semester"]}\n"
-                f"Подтверждено: {"Да" if attend["confirmed"] else "Нет"}\n\n")
+                f"Заверено: {"Да" if attend["confirmed"] else "Нет"}\n\n")
 
     if not attends:
         msg += "Информация отсутствует."
